@@ -1391,9 +1391,10 @@ function resetForWorld(seed){
 
 const SAVE_KEY = "chefsKiss.save.v1";
 let saveOK = true;
+let saveTimer = null;
 
 function saveGame(){
-  if(!saveOK) return;
+  if(!saveOK || wiping) return;
   try{
     localStorage.setItem(SAVE_KEY, JSON.stringify({
       v:1, level:S.level, completed:S.completed, history:S.history, shells:S.shells, day:S.day, served:S.served, dayServed:S.dayServed,
@@ -1431,8 +1432,20 @@ function loadGame(){
   }catch(e){ return false; }
 }
 
+let wiping = false;
+
 function wipeSave(){
+  wiping = true;                       // stop the autosave and the beforeunload hook
+  if(saveTimer) clearInterval(saveTimer);
   try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  // clear the running game too, in case the reload is blocked
+  S.level = 1;
+  loadWorld(1);
+  resetForWorld(150);
+  S.completed = false;
+  S.history = [];
+  S.found = new Set();
+  S.made = new Map();
   location.reload();
 }
 
@@ -1459,8 +1472,8 @@ function rollPrices(){
 const totalStock = () => Object.values(S.stock).reduce((a,b)=>a+b,0);
 
 function patienceFor(vip){
-  return Math.max(11, 32 - (S.day-1)*1.4) * (1 + S.up.calm*0.16) * (vip ? 0.7 : 1)
-         + pool().length;
+  return (Math.max(11, 32 - (S.day-1)*1.4) * (1 + S.up.calm*0.16) * (vip ? 0.7 : 1)
+         + pool().length) * 0.5;
 }
 function wantsCount(){
   if(S.day >= 14) return 4;
@@ -2191,7 +2204,7 @@ function openMorning(){
     "Upgrades work the same way. Nothing else can be ordered once the counter opens.</p>" +
     ascendPanel() +
     '<p>' + (saveOK ? "Progress saves automatically in this browser. " : "Saving is unavailable in this browser. ") +
-    '<button class="linkBtn" id="resetBtn">Start a new run</button></p>';
+    '<button class="linkBtn" id="resetBtn">Start a new run</button> (level 1, no upgrades, empty book)</p>';
   const ab = el("ascendBtn");
   if(ab) ab.addEventListener("click", () => {
     const q = WORLDS[S.level]
@@ -2202,7 +2215,8 @@ function openMorning(){
   });
   const rb = el("resetBtn");
   if(rb) rb.addEventListener("click", () => {
-    if(confirm("Wipe the saved game and start over from day 1?")) wipeSave();
+    if(confirm("Start over completely? This clears your level, " + CUR() +
+               ", stock, every upgrade and the whole recipe book.")) wipeSave();
   });
   setPhaseUI();
   el("modal").classList.add("full");
@@ -2297,7 +2311,7 @@ if(loadGame()){
   drawBowl();
   openMorning();
 }
-setInterval(saveGame, 4000);
+saveTimer = setInterval(saveGame, 4000);
 window.addEventListener("beforeunload", saveGame);
 requestAnimationFrame(tick);
 </script>
