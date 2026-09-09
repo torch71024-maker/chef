@@ -1,0 +1,2452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Deep End — a bubble kitchen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700;9..144,900&family=Jost:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#04191F;--glow:#7FE3D4;--lantern:#F2C14E;--anemone:#E8657C;--sand:#EFDCB8;--line:color-mix(in srgb, var(--glow) 22%, transparent)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:'Jost',system-ui,-apple-system,'Segoe UI',sans-serif;background:var(--ink);
+  color:var(--sand);overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
+button:focus-visible{outline:2px solid var(--lantern);outline-offset:2px}
+#game{height:100dvh;display:grid;grid-template-rows:auto 1fr}
+
+header{display:flex;align-items:center;gap:.9rem;flex-wrap:wrap;padding:.6rem 1.1rem;
+  border-bottom:1px solid var(--line);background:var(--ink);position:relative;z-index:40}
+.sign{font-family:'Fraunces',Georgia,serif;font-weight:900;font-size:1.15rem;letter-spacing:-.015em;
+  color:var(--glow);white-space:nowrap;font-variation-settings:'SOFT' 60,'WONK' 1}
+.sign em{font-style:normal;color:var(--lantern)}
+.stats{display:flex;gap:.9rem;margin-left:auto;align-items:center;font-size:.88rem;flex-wrap:wrap}
+.stat b{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem}
+.stat span{opacity:.55;font-size:.76rem}
+#shellCount{color:var(--lantern)}
+#streakCount{color:var(--glow)}
+.switch{display:flex;align-items:center;gap:.45rem;font-size:.8rem;opacity:.85}
+.track{width:38px;height:21px;border-radius:99px;border:1px solid var(--line);
+  background:rgba(255,255,255,.06);position:relative;transition:background .18s,border-color .18s;flex:none}
+.track .knob{position:absolute;top:2px;left:2px;width:15px;height:15px;border-radius:50%;
+  background:var(--sand);opacity:.55;transition:transform .18s,opacity .18s,background .18s}
+.switch[aria-checked="true"] .track{background:color-mix(in srgb, var(--glow) 22%, transparent);border-color:var(--glow)}
+.switch[aria-checked="true"] .knob{transform:translateX(17px);background:var(--glow);opacity:1}
+.topBtn{border:1px solid var(--line);border-radius:999px;padding:.32rem .85rem;font-size:.83rem;
+  font-weight:500;color:var(--glow);transition:background .15s,border-color .15s}
+.topBtn:hover{background:color-mix(in srgb, var(--glow) 10%, transparent);border-color:var(--glow)}
+.topBtn.nudge{border-color:var(--lantern);color:var(--lantern)}
+.topBtn:disabled{opacity:.32;cursor:not-allowed}
+.topBtn:disabled:hover{background:none;border-color:var(--line)}
+.morning{border:1px solid color-mix(in srgb, var(--lantern) 45%, transparent);border-radius:14px;padding:.8rem .95rem;
+  margin-bottom:.9rem;background:linear-gradient(180deg,color-mix(in srgb, var(--lantern) 12%, transparent),color-mix(in srgb, var(--lantern) 3%, transparent));flex:none}
+.morning h2{font-family:'Fraunces',serif;font-weight:900;font-size:1.1rem;color:var(--lantern);margin-bottom:.3rem}
+.morning p{font-size:.81rem;line-height:1.5;opacity:.8}
+.morning p+p{margin-top:.35rem}
+.morning .arrived{color:var(--glow);opacity:.95}
+.onOrder{color:var(--lantern);opacity:.9}
+.linkBtn{color:var(--glow);text-decoration:underline;text-underline-offset:2px;font-size:.81rem}
+.linkBtn:hover{color:var(--lantern)}
+
+main{display:grid;grid-template-columns:1fr 350px;min-height:0}
+@media (max-width:860px){
+  main{grid-template-columns:1fr;grid-template-rows:1fr auto}
+  #side{border-left:none;border-top:1px solid var(--line);max-height:56dvh;overflow-y:auto}
+  #log{max-height:7rem}
+}
+
+/* pantry */
+#pantry{position:relative;overflow-y:auto;padding:1rem 1.15rem 2rem;
+  background:radial-gradient(120% 90% at 50% 108%,var(--panglow) 0%,transparent 60%),
+    linear-gradient(180deg,var(--ink) 0%,var(--pan1) 60%,var(--pan2) 100%)}
+.pHead{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.7rem;gap:1rem;flex-wrap:wrap}
+.pTitle{font-family:'Fraunces',serif;font-weight:900;font-size:1.05rem;color:var(--glow)}
+.pSub{font-size:.78rem;opacity:.55}
+.grid{display:grid;gap:.55rem;grid-template-columns:repeat(auto-fill,minmax(122px,1fr))}
+.pIng{display:flex;flex-direction:column;align-items:flex-start;gap:.1rem;text-align:left;
+  border:1px solid var(--line);border-radius:14px;padding:.55rem .65rem;position:relative;
+  background:color-mix(in srgb, var(--glow) 5%, transparent);transition:background .13s,border-color .13s,transform .07s}
+.pIng:hover:not(:disabled){background:color-mix(in srgb, var(--glow) 14%, transparent);border-color:var(--glow)}
+.pIng:active:not(:disabled){transform:translateY(1px)}
+.pIng:disabled{opacity:.3;cursor:not-allowed}
+.pIng .pE{font-size:1.5rem;line-height:1.1}
+.pIng .pN{font-weight:600;font-size:.85rem}
+.pIng .pT{font-size:.66rem;opacity:.6;color:var(--glow)}
+.pIng .pC{position:absolute;top:.5rem;right:.6rem;font-family:'Fraunces',serif;font-weight:700;
+  font-size:.95rem;color:var(--lantern)}
+.pIng.out .pC{color:var(--anemone)}
+.empty{opacity:.55;font-size:.88rem;line-height:1.6;max-width:44ch;margin-top:.5rem}
+.floatText{position:fixed;pointer-events:none;font-family:'Fraunces',serif;font-weight:700;font-size:1.5rem;
+  color:var(--lantern);animation:rise 1.2s ease-out forwards;text-shadow:0 2px 10px var(--ink);z-index:50}
+@keyframes rise{from{transform:translate(-50%,-50%);opacity:1}
+  to{transform:translate(-50%,-50%) translateY(-54px);opacity:0}}
+
+/* side */
+#side{display:flex;flex-direction:column;min-height:0;border-left:1px solid var(--line);
+  background:linear-gradient(180deg,var(--deep),var(--ink))}
+.card{padding:.85rem 1.05rem;border-bottom:1px solid var(--line)}
+.cardHead{font-family:'Fraunces',serif;font-weight:700;font-size:.8rem;color:var(--glow);opacity:.8;
+  margin-bottom:.5rem;display:flex;justify-content:space-between;align-items:baseline}
+.cardHead .side{font-family:'Jost',sans-serif;font-weight:400;font-size:.72rem;opacity:.7;color:var(--sand)}
+#customer{display:flex;gap:.8rem;align-items:flex-start}
+.face{font-size:1.9rem;width:2.8rem;height:2.8rem;flex:none;border-radius:50%;display:grid;
+  place-items:center;background:color-mix(in srgb, var(--glow) 9%, transparent);border:1px solid var(--line)}
+.face.vip{border-color:var(--lantern);background:color-mix(in srgb, var(--lantern) 14%, transparent);box-shadow:0 0 16px color-mix(in srgb, var(--lantern) 25%, transparent)}
+.who{font-family:'Fraunces',serif;font-weight:700;font-size:1rem}
+.who .badge{font-family:'Jost',sans-serif;font-size:.62rem;font-weight:600;letter-spacing:.04em;
+  color:var(--lantern);border:1px solid color-mix(in srgb, var(--lantern) 50%, transparent);border-radius:99px;padding:.05rem .4rem;
+  margin-left:.4rem;vertical-align:.12em}
+.order{font-size:.87rem;line-height:1.45;opacity:.88;margin-top:.15rem}
+.order b{color:var(--glow);font-weight:600}
+.order i{font-style:normal;color:var(--anemone);font-weight:600}
+.order u{text-decoration:none;color:var(--lantern);font-weight:600}
+.patience{height:5px;border-radius:99px;background:rgba(255,255,255,.1);margin-top:.55rem;overflow:hidden}
+.patience>i{display:block;height:100%;background:var(--glow);transition:width .2s linear,background .3s}
+.patience.low>i{background:var(--anemone)}
+.noRush{font-size:.72rem;opacity:.45;margin-top:.5rem}
+.peek{font-size:.75rem;opacity:.6;margin-top:.55rem;border-top:1px dashed var(--line);padding-top:.45rem}
+.peek b{color:var(--glow);opacity:.9}
+.slots{display:flex;gap:.45rem;flex-wrap:wrap}
+.slot{width:2.9rem;height:2.9rem;border-radius:14px;border:1px dashed var(--line);display:grid;
+  place-items:center;font-size:1.4rem;position:relative;background:color-mix(in srgb, var(--glow) 4%, transparent)}
+.slot.full{border-style:solid;border-color:color-mix(in srgb, var(--glow) 50%, transparent);background:color-mix(in srgb, var(--glow) 10%, transparent);cursor:pointer}
+.slot .tip{position:absolute;bottom:-.05rem;left:0;right:0;text-align:center;font-size:.5rem;
+  color:var(--glow);opacity:.7;overflow:hidden;white-space:nowrap}
+.acts{display:flex;gap:.5rem;margin-top:.7rem}
+.btn{flex:1;border-radius:11px;padding:.48rem .6rem;font-size:.87rem;font-weight:500;
+  border:1px solid var(--line);color:var(--glow);transition:background .15s,transform .08s}
+.btn:hover:not(:disabled){background:color-mix(in srgb, var(--glow) 12%, transparent)}
+.btn:active:not(:disabled){transform:translateY(1px)}
+.btn:disabled{opacity:.3;cursor:not-allowed}
+.btn.go{background:var(--glow);color:var(--ink);border-color:var(--glow);font-weight:600}
+.btn.go:hover:not(:disabled){background:color-mix(in srgb, var(--glow) 78%, white)}
+.btn.ghost{color:var(--sand);opacity:.55}
+#plate{display:none}
+#plate.on{display:block}
+.dish{border:1px solid color-mix(in srgb, var(--lantern) 40%, transparent);border-radius:14px;padding:.7rem .85rem;
+  background:linear-gradient(180deg,color-mix(in srgb, var(--lantern) 11%, transparent),color-mix(in srgb, var(--lantern) 3%, transparent))}
+.dishName{font-family:'Fraunces',serif;font-weight:700;font-size:1.05rem;line-height:1.25;color:var(--lantern)}
+.dishTags{display:flex;gap:.3rem;flex-wrap:wrap;margin-top:.45rem}
+.tag{font-size:.67rem;padding:.13rem .44rem;border-radius:99px;border:1px solid var(--line);
+  color:var(--glow);opacity:.7}
+.tag.hit{background:var(--glow);color:var(--ink);border-color:var(--glow);opacity:1;font-weight:600}
+.tag.bad{background:var(--anemone);color:#fff;border-color:var(--anemone);opacity:1;font-weight:600}
+.known{font-size:.7rem;color:var(--lantern);opacity:.85;margin-top:.4rem}
+.known.fresh{color:var(--glow)}
+#log{flex:1;overflow-y:auto;padding:.7rem 1.05rem 1.2rem;font-size:.79rem;line-height:1.55;min-height:0}
+#log p{opacity:.68;margin-bottom:.32rem}
+#log p.good{color:var(--glow);opacity:.95}
+#log p.bad{color:var(--anemone);opacity:.95}
+#log p.day{color:var(--lantern);font-family:'Fraunces',serif;font-weight:700;opacity:1;margin:.6rem 0 .35rem}
+
+/* modal */
+#modal{position:fixed;inset:0;z-index:60;display:none;background:rgba(2,12,16,.85);
+  backdrop-filter:blur(6px);align-items:center;justify-content:center;padding:1.1rem}
+#modal.on{display:flex}
+.box{width:min(680px,100%);max-height:88dvh;display:flex;flex-direction:column;
+  background:linear-gradient(180deg,var(--deep2),var(--deep));border:1px solid var(--line);
+  border-radius:20px;padding:1.2rem}
+.tabs{display:flex;gap:.5rem;margin-bottom:.9rem;flex:none;flex-wrap:wrap}
+.tab{border:1px solid var(--line);border-radius:99px;padding:.32rem .95rem;font-size:.85rem;
+  color:var(--sand);opacity:.6}
+.tab.on{opacity:1;color:var(--glow);border-color:var(--glow);background:color-mix(in srgb, var(--glow) 10%, transparent)}
+.pane{overflow-y:auto;flex:1;min-height:0}
+.pane[hidden]{display:none}
+.note{font-size:.8rem;opacity:.62;margin-bottom:.75rem;line-height:1.5}
+
+.mRow{display:flex;gap:.7rem;align-items:center;padding:.5rem 0;border-top:1px solid var(--line)}
+.mRow .ic{font-size:1.35rem;width:1.9rem;text-align:center;flex:none}
+.mRow .txt{flex:1;min-width:0}
+.mRow .t{font-weight:600;font-size:.92rem}
+.mRow .d{font-size:.75rem;opacity:.6;line-height:1.4}
+.mRow .have{font-family:'Fraunces',serif;font-weight:700;color:var(--lantern);font-size:.95rem;
+  width:2.6rem;text-align:right;flex:none}
+.buy{border:1px solid var(--lantern);color:var(--lantern);border-radius:99px;padding:.28rem .6rem;
+  font-size:.78rem;font-weight:600;white-space:nowrap;flex:none}
+.buy:hover:not(:disabled){background:var(--lantern);color:var(--ink)}
+.buy:disabled{opacity:.26;cursor:not-allowed}
+.groupHead{font-family:'Fraunces',serif;font-weight:700;font-size:.85rem;color:var(--glow);opacity:.85;
+  margin:.9rem 0 .1rem;display:flex;justify-content:space-between;align-items:baseline}
+.groupHead .g2{font-family:'Jost',sans-serif;font-weight:400;font-size:.73rem;opacity:.65;color:var(--sand)}
+.wallet{display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+  border:1px solid var(--line);border-radius:12px;padding:.45rem .8rem;margin-bottom:.9rem;
+  background:color-mix(in srgb, var(--lantern) 7%, transparent);flex:none}
+.wallet b{font-family:'Fraunces',serif;font-weight:700;font-size:1.15rem;color:var(--lantern)}
+.wallet span{font-size:.76rem;opacity:.6}
+.mv{font-size:.7rem;margin-left:.35rem}
+.mv.up{color:var(--anemone)}
+.mv.dn{color:var(--glow)}
+.bulkBar{display:flex;gap:.5rem;margin-bottom:.6rem;flex-wrap:wrap}
+.rec{display:flex;gap:.6rem;align-items:baseline;font-size:.81rem;padding:.13rem 0}
+.rec .rn{font-weight:600;min-width:10.5rem;flex:none}
+.rec .ri{opacity:.55;font-size:.74rem}
+.rec.locked .rn{opacity:.3;font-weight:400;font-style:italic}
+.rec.locked .ri{opacity:.28}
+.rec.improv .rn{color:var(--sand);font-weight:500}
+.closeBtn{margin-top:1rem;padding:.55rem;border:1px solid var(--line);border-radius:12px;
+  color:var(--sand);width:100%;flex:none}
+.closeBtn:hover{background:rgba(255,255,255,.05)}
+@media (prefers-reduced-motion:reduce){.floatText{animation-duration:.01ms}}
+</style>
+</head>
+<body>
+<div id="game">
+  <header>
+    <div class="sign">The Deep <em>End</em></div>
+    <div class="stats">
+      <div class="stat"><b id="shellCount">0</b> <span id="curLabel">shells</span></div>
+      <div class="stat"><b id="levelCount">1</b> <span>level</span></div>
+      <div class="stat"><b id="dayCount">1</b> <span>day</span></div>
+      <div class="stat"><b id="servedCount">0</b> <span>served</span></div>
+      <div class="stat"><b id="streakCount">0</b> <span>streak</span></div>
+      <button class="switch" id="timerToggle" role="switch" aria-checked="true">
+        <span class="track"><span class="knob"></span></span><span>Timer</span>
+      </button>
+      <button class="topBtn" id="btnStock">Truck order</button>
+      <button class="topBtn" id="btnUp">Upgrades</button>
+      <button class="topBtn" id="btnBook">Recipe book</button>
+    </div>
+  </header>
+
+  <main>
+    <section id="pantry" aria-label="Pantry">
+      <div class="pHead">
+        <div>
+          <div class="pTitle">Pantry</div>
+          <div class="pSub" id="pantrySub"></div>
+        </div>
+      </div>
+      <div class="grid" id="pantryGrid"></div>
+      <div class="empty" id="pantryEmpty" hidden></div>
+    </section>
+
+    <aside id="side">
+      <div class="card">
+        <div class="cardHead">At the counter</div>
+        <div id="customer">
+          <div class="face" id="cFace">🐟</div>
+          <div style="flex:1;min-width:0">
+            <div class="who" id="cName">—</div>
+            <div class="order" id="cOrder">…</div>
+            <div class="patience" id="cPatience"><i style="width:100%"></i></div>
+            <div class="noRush" id="cNoRush" hidden>No rush — they'll wait as long as it takes.</div>
+            <div class="peek" id="cPeek" hidden></div>
+          </div>
+        </div>
+        <div class="acts"><button class="btn ghost" id="waveBtn">Wave them off</button></div>
+      </div>
+
+      <div class="card">
+        <div class="cardHead">Prep bowl <span class="side" id="bowlHint"></span></div>
+        <div class="slots" id="slots"></div>
+        <div class="acts">
+          <button class="btn" id="combineBtn" disabled>Combine</button>
+          <button class="btn ghost" id="clearBtn" disabled>Tip out</button>
+        </div>
+      </div>
+
+      <div class="card" id="plate">
+        <div class="cardHead">On the plate</div>
+        <div class="dish">
+          <div class="dishName" id="dishName"></div>
+          <div class="dishTags" id="dishTags"></div>
+          <div class="known" id="dishKnown"></div>
+        </div>
+        <div class="acts">
+          <button class="btn go" id="serveBtn">Serve it</button>
+          <button class="btn ghost" id="binBtn">Bin it</button>
+        </div>
+      </div>
+
+      <div id="log"></div>
+    </aside>
+  </main>
+</div>
+
+<div id="modal" role="dialog" aria-modal="true" aria-label="Morning orders">
+  <div class="box">
+    <div class="morning" id="morningBox" hidden></div>
+    <div class="tabs">
+      <button class="tab on" id="tabStock">Truck order</button>
+      <button class="tab" id="tabUp">Upgrades</button>
+      <button class="tab" id="tabBook">Recipe book</button>
+    </div>
+    <div class="wallet"><span id="walletCtx">Today's prices</span><b id="walletShells">0</b></div>
+    <div class="pane" id="paneStock">
+      <div class="note" id="stockNote"></div>
+      <div class="bulkBar" id="bulkBar"></div>
+      <div id="market"></div>
+    </div>
+    <div class="pane" id="paneUp" hidden>
+      <div class="note">Permanent improvements to the kitchen.</div>
+      <div id="upgrades"></div>
+    </div>
+    <div class="pane" id="paneBook" hidden>
+      <div class="note" id="bookNote"></div>
+      <div id="book"></div>
+    </div>
+    <button class="closeBtn" id="closeBtn">Back to the counter</button>
+  </div>
+</div>
+
+<script>
+"use strict";
+
+/* ============================ DATA ============================ */
+
+const TAG_WORDS = {sweet:"sweet",salty:"salty",sour:"sour",spicy:"spicy",creamy:"creamy",
+  crunchy:"crunchy",fresh:"fresh",briny:"briny",rich:"rich",cold:"cold",
+  smoky:"smoky",bitter:"bitter",herbal:"herbal",chewy:"chewy"};
+
+const W1_ING = [
+  {id:"kelp",n:"Kelp",e:"🌿",tier:0,tags:["fresh","briny"]},
+  {id:"shrimp",n:"Shrimp",e:"🦐",tier:0,tags:["briny","rich"]},
+  {id:"rice",n:"Rice",e:"🍚",tier:0,tags:["creamy","chewy"]},
+  {id:"lemon",n:"Lemon",e:"🍋",tier:0,tags:["sour","fresh"]},
+  {id:"egg",n:"Egg",e:"🥚",tier:0,tags:["rich","creamy"]},
+  {id:"salt",n:"Sea salt",e:"🧂",tier:0,tags:["salty"]},
+
+  {id:"mango",n:"Mango",e:"🥭",tier:1,tags:["sweet","fresh"]},
+  {id:"chili",n:"Chili",e:"🌶️",tier:1,tags:["spicy"]},
+  {id:"butter",n:"Butter",e:"🧈",tier:1,tags:["rich","creamy"]},
+  {id:"squid",n:"Squid",e:"🦑",tier:1,tags:["briny","chewy"]},
+  {id:"honey",n:"Honey",e:"🍯",tier:1,tags:["sweet","rich"]},
+  {id:"cracker",n:"Crackers",e:"🍘",tier:1,tags:["crunchy","salty"]},
+
+  {id:"choc",n:"Chocolate",e:"🍫",tier:2,tags:["sweet","bitter"]},
+  {id:"cheese",n:"Cheese",e:"🧀",tier:2,tags:["rich","salty"]},
+  {id:"crab",n:"Crab",e:"🦀",tier:2,tags:["briny","sweet"]},
+  {id:"ice",n:"Ice",e:"🧊",tier:2,tags:["cold","fresh"]},
+  {id:"basil",n:"Basil",e:"🍃",tier:2,tags:["fresh","herbal"]},
+  {id:"peanut",n:"Peanuts",e:"🥜",tier:2,tags:["crunchy","rich"]},
+
+  {id:"brew",n:"Cold brew",e:"☕",tier:3,tags:["bitter","cold"]},
+  {id:"urchin",n:"Sea urchin",e:"🍥",tier:3,tags:["briny","creamy"]},
+  {id:"coconut",n:"Coconut",e:"🥥",tier:3,tags:["sweet","creamy"]},
+  {id:"truffle",n:"Truffle",e:"🍄",tier:3,tags:["rich","herbal"]},
+  {id:"pickle",n:"Pickle",e:"🥒",tier:3,tags:["sour","crunchy"]},
+  {id:"caviar",n:"Caviar",e:"🐠",tier:3,tags:["briny","salty"]},
+
+  {id:"eel",n:"Smoked eel",e:"🍢",tier:4,tags:["smoky","rich"]},
+  {id:"ginger",n:"Ginger",e:"🫚",tier:4,tags:["spicy","fresh"]},
+  {id:"yuzu",n:"Yuzu",e:"🍈",tier:4,tags:["sour","fresh"]},
+  {id:"garlic",n:"Black garlic",e:"🧄",tier:4,tags:["smoky","bitter"]},
+  {id:"mochi",n:"Mochi",e:"🍡",tier:4,tags:["sweet","chewy"]},
+  {id:"olive",n:"Cured olive",e:"🫒",tier:4,tags:["salty","bitter"]},
+
+  {id:"scallop",n:"Scallop",e:"🐚",tier:5,tags:["briny","creamy"]},
+  {id:"chilioil",n:"Chili oil",e:"🫙",tier:5,tags:["spicy","smoky"]},
+  {id:"vanilla",n:"Vanilla",e:"🌼",tier:5,tags:["sweet","creamy"]},
+  {id:"sourdough",n:"Sourdough",e:"🍞",tier:5,tags:["chewy","crunchy"]},
+  {id:"mint",n:"Mint",e:"🌱",tier:5,tags:["fresh","cold"]},
+  {id:"anchovy",n:"Anchovy",e:"🐟",tier:5,tags:["salty","briny"]},
+
+  {id:"miso",n:"Miso",e:"🥣",tier:6,tags:["salty","rich"]},
+  {id:"berry",n:"Blackberry",e:"🫐",tier:6,tags:["sour","sweet"]},
+  {id:"charcoal",n:"Charcoal",e:"🪨",tier:6,tags:["smoky","bitter"]},
+  {id:"custard",n:"Custard",e:"🍮",tier:6,tags:["sweet","creamy"]},
+  {id:"kimchi",n:"Kimchi",e:"🥬",tier:6,tags:["spicy","sour"]},
+  {id:"tempura",n:"Tempura",e:"🍤",tier:6,tags:["crunchy","rich"]},
+
+  {id:"saffron",n:"Saffron",e:"🌾",tier:7,tags:["herbal","rich"]},
+  {id:"lobster",n:"Lobster",e:"🦞",tier:7,tags:["briny","sweet"]},
+  {id:"soy",n:"Aged soy",e:"🍶",tier:7,tags:["salty","smoky"]},
+  {id:"fig",n:"Fig",e:"🍇",tier:7,tags:["sweet","chewy"]},
+  {id:"wasabi",n:"Wasabi",e:"🍀",tier:7,tags:["spicy","fresh"]},
+  {id:"nitro",n:"Nitro foam",e:"🫧",tier:7,tags:["cold","creamy"]},
+
+  {id:"gold",n:"Gold leaf",e:"✨",tier:8,tags:["rich","sweet"]},
+  {id:"abyss",n:"Abyss pepper",e:"🌑",tier:8,tags:["spicy","bitter"]},
+  {id:"jelly",n:"Moon jelly",e:"🪼",tier:8,tags:["fresh","chewy"]},
+  {id:"volcano",n:"Volcano salt",e:"🌋",tier:8,tags:["salty","smoky"]},
+  {id:"frost",n:"Frostberry",e:"❄️",tier:8,tags:["cold","sour"]},
+  {id:"amber",n:"Amber sap",e:"🟠",tier:8,tags:["sweet","herbal"]},
+
+  {id:"ink",n:"Void ink",e:"⚫",tier:9,tags:["bitter","briny"]},
+  {id:"glowkelp",n:"Glowkelp",e:"💡",tier:9,tags:["fresh","herbal"]},
+  {id:"marrow",n:"Bone marrow",e:"🦴",tier:9,tags:["rich","creamy"]},
+  {id:"whisky",n:"Cask whisky",e:"🥃",tier:9,tags:["smoky","bitter"]},
+  {id:"comb",n:"Wild comb",e:"🐝",tier:9,tags:["sweet","chewy"]},
+  {id:"crystal",n:"Trench crystal",e:"💠",tier:9,tags:["salty","cold"]}
+];
+const W1_TIERS = ["Home shelf","Market run","Cold room","Specialist order","Smokehouse",
+  "Coast supplier","Ferment cellar","Fine goods","The deep haul","The midnight run"];
+
+const W1_RECIPES = [
+  [["rice","shrimp"],"Shrimp Nigiri",["fresh"]],
+  [["lemon","shrimp"],"Lemon Ceviche",["sour"]],
+  [["egg","rice"],"Tamago Bowl",["creamy"]],
+  [["kelp","rice"],"Seaweed Roll",["briny"]],
+  [["egg","salt"],"Salt-Cured Yolk",["salty"]],
+  [["kelp","lemon"],"Bright Kelp Salad",["fresh"]],
+  [["kelp","shrimp"],"Tidepool Skewer",["briny"]],
+  [["egg","shrimp"],"Shrimp Omelette",["rich"]],
+  [["lemon","rice"],"Citrus Rice",["sour"]],
+  [["rice","salt"],"Onigiri",["salty"]],
+  [["kelp","salt"],"Kelp Crisp",["crunchy"]],
+  [["egg","lemon"],"Lemon Curd",["sweet"]],
+  [["salt","shrimp"],"Salt-Baked Shrimp",["briny"]],
+  [["lemon","salt"],"Preserved Lemon",["sour"]],
+  [["egg","kelp"],"Green Custard",["creamy"]],
+  [["chili","shrimp"],"Firecracker Shrimp",["spicy"]],
+  [["butter","honey"],"Golden Glaze",["sweet"]],
+  [["cracker","salt"],"Salt Crisps",["crunchy"]],
+  [["mango","rice"],"Mango Sticky Rice",["sweet"]],
+  [["butter","rice"],"Butter Rice",["rich"]],
+  [["honey","lemon"],"Honey Citrus",["sweet"]],
+  [["lemon","mango"],"Mango Sour",["sour"]],
+  [["butter","shrimp"],"Butter Shrimp",["rich"]],
+  [["chili","squid"],"Blistered Squid",["spicy"]],
+  [["rice","squid"],"Squid Ink Bowl",["briny"]],
+  [["cracker","shrimp"],"Shrimp Toast",["crunchy"]],
+  [["honey","rice"],"Sweet Rice Pudding",["creamy"]],
+  [["chili","kelp"],"Firewrack Kelp",["spicy"]],
+  [["mango","squid"],"Sunset Skewer",["sweet"]],
+  [["butter","cracker"],"Buttered Crisp",["rich"]],
+  [["honey","squid"],"Glazed Squid",["sweet"]],
+  [["chili","egg"],"Devilled Egg",["spicy"]],
+  [["honey","mango"],"Nectar Cup",["sweet"]],
+  [["cracker","kelp"],"Sea Cracker",["crunchy"]],
+  [["butter","chili"],"Chili Butter",["spicy"]],
+  [["cheese","cracker"],"The Tide Board",["salty"]],
+  [["butter","crab"],"Butter-Poached Crab",["rich"]],
+  [["ice","mango"],"Mango Granita",["cold"]],
+  [["basil","lemon"],"Green Wave Sorbet",["fresh"]],
+  [["peanut","squid"],"Crackling Squid",["crunchy"]],
+  [["chili","choc"],"Ember Bar",["spicy"]],
+  [["cheese","egg"],"Molten Cheese Egg",["rich"]],
+  [["crab","rice"],"Crab Don",["briny"]],
+  [["ice","lemon"],"Lemon Ice",["cold"]],
+  [["basil","cheese"],"Herb Curd",["herbal"]],
+  [["honey","peanut"],"Sunken Brittle",["crunchy"]],
+  [["choc","ice"],"Frozen Cocoa",["cold"]],
+  [["crab","lemon"],"Crab & Citrus",["sour"]],
+  [["basil","shrimp"],"Herbed Shrimp",["herbal"]],
+  [["chili","peanut"],"Fire Nuts",["spicy"]],
+  [["cheese","chili"],"Molten Heat",["spicy"]],
+  [["choc","peanut"],"Reef Cluster",["crunchy"]],
+  [["basil","ice"],"Basil Freeze",["cold"]],
+  [["cheese","crab"],"Crab Melt",["rich"]],
+  [["choc","honey"],"Honeyed Cocoa",["sweet"]],
+  [["basil","mango"],"Mango Basil Cup",["herbal"]],
+  [["ice","peanut"],"Frozen Praline",["cold"]],
+  [["choc","coconut"],"Reef Truffle",["rich"]],
+  [["caviar","egg"],"Pearl & Yolk",["briny"]],
+  [["brew","ice"],"Deep Freeze Brew",["cold"]],
+  [["cheese","pickle"],"Brine & Rind",["sour"]],
+  [["coconut","urchin"],"Uni Cream",["creamy"]],
+  [["rice","urchin"],"Urchin Don",["briny"]],
+  [["kelp","truffle"],"Forest Floor Broth",["rich"]],
+  [["egg","truffle"],"Truffled Custard",["creamy"]],
+  [["brew","choc"],"Mocha Depths",["bitter"]],
+  [["coconut","mango"],"Tropic Cup",["sweet"]],
+  [["cracker","pickle"],"Sour Snap",["crunchy"]],
+  [["caviar","cracker"],"Roe Toast",["salty"]],
+  [["cheese","truffle"],"Truffle Rind",["rich"]],
+  [["lemon","urchin"],"Uni Citrus",["sour"]],
+  [["brew","coconut"],"Cold Coconut Brew",["cold"]],
+  [["pickle","shrimp"],"Sour Shrimp",["sour"]],
+  [["caviar","urchin"],"The Whole Ocean",["briny"]],
+  [["rice","truffle"],"Truffle Risotto",["creamy"]],
+  [["coconut","ice"],"Coconut Freeze",["cold"]],
+  [["brew","honey"],"Sweet Cold Brew",["sweet"]],
+  [["basil","pickle"],"Herb Pickle",["herbal"]],
+  [["caviar","crab"],"Roe & Claw",["briny"]],
+  [["eel","rice"],"Unagi Don",["smoky"]],
+  [["ginger","shrimp"],"Ginger Shrimp",["spicy"]],
+  [["ice","yuzu"],"Yuzu Sorbet",["cold"]],
+  [["butter","garlic"],"Black Garlic Butter",["smoky"]],
+  [["honey","mochi"],"Honey Mochi",["chewy"]],
+  [["cheese","olive"],"Olive Board",["salty"]],
+  [["eel","kelp"],"Smoked Kelp Roll",["smoky"]],
+  [["ginger","yuzu"],"Ginger Yuzu Fizz",["fresh"]],
+  [["choc","mochi"],"Cocoa Mochi",["chewy"]],
+  [["crab","yuzu"],"Yuzu Crab",["sour"]],
+  [["garlic","shrimp"],"Garlic Shrimp",["smoky"]],
+  [["eel","egg"],"Eel & Egg",["rich"]],
+  [["ice","mochi"],"Frozen Mochi",["cold"]],
+  [["lemon","olive"],"Cured Citrus",["bitter"]],
+  [["choc","ginger"],"Spiced Cocoa",["spicy"]],
+  [["garlic","kelp"],"Charred Kelp",["smoky"]],
+  [["mochi","urchin"],"Uni Mochi",["chewy"]],
+  [["olive","rice"],"Olive Rice",["bitter"]],
+  [["ginger","pickle"],"Pickled Ginger",["sour"]],
+  [["eel","yuzu"],"Yuzu Eel",["smoky"]],
+  [["butter","scallop"],"Seared Scallop",["rich"]],
+  [["chilioil","rice"],"Chili Oil Bowl",["spicy"]],
+  [["coconut","vanilla"],"Vanilla Cream",["creamy"]],
+  [["olive","sourdough"],"Olive Loaf",["chewy"]],
+  [["ice","mint"],"Mint Freeze",["cold"]],
+  [["anchovy","cracker"],"Anchovy Snap",["salty"]],
+  [["scallop","yuzu"],"Scallop Crudo",["sour"]],
+  [["chilioil","squid"],"Fire Squid",["spicy"]],
+  [["brew","vanilla"],"Vanilla Cold Brew",["sweet"]],
+  [["cheese","sourdough"],"Melted Round",["chewy"]],
+  [["choc","mint"],"Mint Cocoa",["cold"]],
+  [["anchovy","garlic"],"Anchovy Garlic Paste",["smoky"]],
+  [["scallop","truffle"],"Scallop Truffle",["rich"]],
+  [["mango","mint"],"Mango Mint Cup",["fresh"]],
+  [["butter","sourdough"],"Warm Bread & Butter",["rich"]],
+  [["anchovy","olive"],"The Salt Cellar",["salty"]],
+  [["chilioil","scallop"],"Blistered Scallop",["spicy"]],
+  [["mint","yuzu"],"Yuzu Mint Ice",["cold"]],
+  [["sourdough","tempura"],"Double Crunch",["crunchy"]],
+  [["mochi","vanilla"],"Vanilla Mochi",["chewy"]],
+  [["kelp","miso"],"Miso Broth",["salty"]],
+  [["berry","vanilla"],"Berry Cream",["sweet"]],
+  [["charcoal","ice"],"Charcoal Freeze",["smoky"]],
+  [["custard","mochi"],"Custard Mochi",["chewy"]],
+  [["kimchi","rice"],"Kimchi Bowl",["spicy"]],
+  [["shrimp","tempura"],"Tempura Shrimp",["crunchy"]],
+  [["butter","miso"],"Miso Butter",["rich"]],
+  [["berry","lemon"],"Berry Sour",["sour"]],
+  [["charcoal","choc"],"Burnt Cocoa",["bitter"]],
+  [["brew","custard"],"Affogato",["bitter"]],
+  [["cheese","kimchi"],"Kimchi Melt",["spicy"]],
+  [["kelp","tempura"],"Kelp Tempura",["crunchy"]],
+  [["miso","scallop"],"Miso Scallop",["salty"]],
+  [["berry","mint"],"Berry Mint",["fresh"]],
+  [["custard","vanilla"],"Deep Custard",["creamy"]],
+  [["charcoal","sourdough"],"Black Loaf",["smoky"]],
+  [["kimchi","pickle"],"Double Sour",["sour"]],
+  [["miso","urchin"],"Miso Uni",["briny"]],
+  [["berry","choc"],"Berry Bar",["sweet"]],
+  [["tempura","yuzu"],"Yuzu Tempura",["crunchy"]],
+  [["rice","saffron"],"Saffron Rice",["herbal"]],
+  [["butter","lobster"],"Lobster Butter",["rich"]],
+  [["egg","soy"],"Soy-Cured Yolk",["salty"]],
+  [["cheese","fig"],"Fig & Rind",["sweet"]],
+  [["urchin","wasabi"],"Wasabi Uni",["spicy"]],
+  [["brew","nitro"],"Nitro Brew",["cold"]],
+  [["saffron","scallop"],"Saffron Scallop",["herbal"]],
+  [["lobster","yuzu"],"Lobster Citrus",["sour"]],
+  [["eel","soy"],"Soy-Glazed Eel",["smoky"]],
+  [["fig","honey"],"Fig Nectar",["sweet"]],
+  [["crab","wasabi"],"Wasabi Crab",["spicy"]],
+  [["nitro","vanilla"],"Nitro Vanilla",["creamy"]],
+  [["lobster","saffron"],"Saffron Lobster",["rich"]],
+  [["fig","sourdough"],"Fig Toast",["chewy"]],
+  [["nitro","yuzu"],"Yuzu Foam",["cold"]],
+  [["soy","tempura"],"Soy Tempura",["salty"]],
+  [["custard","saffron"],"Saffron Custard",["creamy"]],
+  [["berry","fig"],"Orchard Plate",["sweet"]],
+  [["gold","lobster"],"The House Special",["rich"]],
+  [["abyss","chilioil"],"Abyssal Heat",["spicy"]],
+  [["jelly","yuzu"],"Moonlight Cup",["fresh"]],
+  [["cracker","volcano"],"Volcano Crisp",["salty"]],
+  [["berry","frost"],"Frostberry Ice",["cold"]],
+  [["amber","mochi"],"Amber Mochi",["sweet"]],
+  [["custard","gold"],"Gilded Custard",["creamy"]],
+  [["abyss","choc"],"Black Depth Bar",["bitter"]],
+  [["jelly","mint"],"Jelly Mint",["cold"]],
+  [["eel","volcano"],"Volcano Eel",["smoky"]],
+  [["brew","frost"],"Frost Brew",["cold"]],
+  [["amber","cheese"],"Amber Rind",["sweet"]],
+  [["gold","urchin"],"Gilded Uni",["briny"]],
+  [["abyss","kimchi"],"Deep Fire",["spicy"]],
+  [["jelly","scallop"],"Jelly & Shell",["chewy"]],
+  [["amber","saffron"],"Amber Saffron",["herbal"]],
+  [["egg","rice","shrimp"],"The Full Bowl",["rich"]],
+  [["kelp","rice","salt"],"Classic Onigiri Set",["briny"]],
+  [["choc","honey","peanut"],"Deep Reef Bar",["crunchy"]],
+  [["butter","crab","lemon"],"Crab Feast",["rich"]],
+  [["brew","ice","vanilla"],"The Long Night",["cold"]],
+  [["caviar","cracker","egg"],"Roe Service",["briny"]],
+  [["cheese","rice","truffle"],"Truffle Risotto Royale",["rich"]],
+  [["ice","mango","mint"],"Tropic Freeze",["cold"]],
+  [["butter","lobster","saffron"],"Captain's Plate",["rich"]],
+  [["abyss","gold","lobster"],"The Deep End",["rich"]],
+  [["kelp","miso","scallop"],"Sea Broth",["salty"]],
+  [["cheese","fig","sourdough"],"The Board",["chewy"]],
+  [["chilioil","shrimp","tempura"],"Fire Tempura",["crunchy"]],
+  [["custard","mochi","vanilla"],"Cloud Mochi",["creamy"]],
+  [["egg","kimchi","rice"],"Kimchi Fried Rice",["spicy"]],
+  [["ginger","soy","squid"],"Night Market Squid",["smoky"]],
+  [["berry","frost","nitro"],"Glacier Cup",["cold"]],
+  [["anchovy","olive","sourdough"],"Fisherman's Toast",["salty"]],
+  [["basil","lemon","scallop"],"Crudo Verde",["herbal"]],
+  [["amber","gold","vanilla"],"Last Order",["sweet"]],
+  [["butter","cheese","egg","rice"],"The Whole Kitchen",["rich"]],
+  [["ice","lemon","mint","yuzu"],"Four Winds Ice",["cold"]],
+  [["caviar","gold","lobster","urchin"],"Sunken Treasure",["briny"]],
+  [["choc","custard","gold","vanilla"],"Midnight Service",["sweet"]],
+  [["abyss","chilioil","kimchi","wasabi"],"Five Alarm",["spicy"]],
+
+  [["ink","rice"],"Void Risotto",["briny"]],
+  [["ink","squid"],"Deep Ink Pasta",["bitter"]],
+  [["glowkelp","lemon"],"Glow Salad",["fresh"]],
+  [["glowkelp","scallop"],"Lantern Crudo",["herbal"]],
+  [["marrow","sourdough"],"Marrow Toast",["rich"]],
+  [["marrow","miso"],"Marrow Broth",["rich"]],
+  [["brew","whisky"],"Night Cask",["bitter"]],
+  [["choc","whisky"],"Cask Truffle",["smoky"]],
+  [["comb","custard"],"Comb Custard",["sweet"]],
+  [["cheese","comb"],"Comb & Rind",["chewy"]],
+  [["crystal","urchin"],"Crystal Uni",["cold"]],
+  [["cracker","crystal"],"Frost Crust",["salty"]],
+  [["gold","ink"],"Black & Gold",["rich"]],
+  [["fig","whisky"],"Cask Fig",["smoky"]],
+  [["garlic","marrow"],"Garlic Marrow",["smoky"]],
+  [["glowkelp","jelly"],"Lantern Jelly",["fresh"]],
+  [["comb","mochi"],"Comb Mochi",["chewy"]],
+  [["crystal","frost"],"Double Freeze",["cold"]],
+  [["ink","lobster"],"Ink & Claw",["briny"]],
+  [["amber","comb"],"Amber Comb",["sweet"]],
+  [["ink","marrow","sourdough"],"The Trench Plate",["rich"]],
+  [["comb","custard","whisky"],"Last Call",["sweet"]],
+  [["crystal","glowkelp","jelly"],"Lightless Garden",["cold"]],
+  [["gold","ink","marrow","whisky"],"The Midnight Haul",["rich"]]
+];
+
+
+
+const W1_FORMS = [
+  {tag:"cold",words:["Granita","Float","Freeze","Slush"]},
+  {tag:"spicy",words:["Sizzle","Hot Pot","Flare","Burn"]},
+  {tag:"smoky",words:["Smoke Plate","Char","Ash Bowl"]},
+  {tag:"crunchy",words:["Fritters","Crisps","Crumble","Snap"]},
+  {tag:"creamy",words:["Chowder","Custard","Cream","Velouté"]},
+  {tag:"sweet",words:["Tart","Parfait","Pudding","Trifle"]},
+  {tag:"sour",words:["Ceviche","Pickle Plate","Splash","Sour"]},
+  {tag:"bitter",words:["Bitters","Dark Bowl","Reduction"]},
+  {tag:"briny",words:["Roll","Skewer","Catch","Haul"]},
+  {tag:"chewy",words:["Dumpling","Knot","Chew"]},
+  {tag:"rich",words:["Bake","Butterbowl","Braise","Terrine"]},
+  {tag:"herbal",words:["Infusion","Green Bowl","Posy"]},
+  {tag:"salty",words:["Crust","Cure","Board"]},
+  {tag:"fresh",words:["Salad","Toss","Garden","Wave"]}
+];
+
+const W1_CUSTOMERS = [
+  {e:"🐙",n:"Odell"},{e:"🐠",n:"Pim"},{e:"🦭",n:"Bruna"},{e:"🐡",n:"Huff"},
+  {e:"🦞",n:"Constance"},{e:"🐢",n:"Wendell"},{e:"🦈",n:"Marge"},{e:"🐳",n:"Bo"},
+  {e:"🦀",n:"Twitch"},{e:"🐬",n:"Silva"},{e:"🪼",n:"Ghost"},{e:"🦑",n:"Ink"},
+  {e:"🐧",n:"Rutger"},{e:"🦩",n:"Delphine"},{e:"🐊",n:"Sy"},{e:"🦦",n:"Pell"},
+  {e:"🦆",n:"Moss"},{e:"🐋",n:"Ivor"},{e:"🦐",n:"Nita"},{e:"🐚",n:"Fen"},
+  {e:"🐟",n:"Quill"},{e:"🪸",n:"Rook"},{e:"🐌",n:"Tam"},{e:"🦭",n:"Ola"}
+];
+
+const W1_ASKS = ["Something {w}, if you've got it.","I'm after something {w}.",
+  "Give me {w}. Surprise me otherwise.","Long shift. Something {w}.",
+  "{w} — that's all I'm asking.","My usual: {w}.","Been swimming all day. Make it {w}.",
+  "I hear you do {w} well.","Nothing fancy. Just {w}.","Whatever you like, so long as it's {w}."];
+
+const DEMAND_TEXT = {
+  known:"Something off the actual menu, please.",
+  big:"Make it substantial — three things at least.",
+  solo:"Keep it simple. One ingredient, nothing else."
+};
+
+const W1_UPGRADES = [
+  {id:"crate",ic:"📦",t:"New ingredients",max:9,costs:[110,240,420,660,1000,1450,2050,2850,3900],
+   d:()=>crateBlurb()},
+  {id:"bowl",ic:"🥣",t:"Wider bowl",max:3,costs:[150,430,1150],
+   d:()=>"Combine more ingredients at once. Now " + bowlSize() + " slots."},
+  {id:"calm",ic:"🕯️",t:"Softer lighting",max:5,costs:[100,190,330,540,820],
+   d:()=>"Guests wait longer before walking out."},
+  {id:"apron",ic:"🧵",t:"Signature apron",max:5,costs:[170,310,530,860,1320],
+   d:()=>"Better tips on every plate. Currently +" + Math.round((tipMult()-1)*100) + "%."},
+  {id:"bulk",ic:"⚖️",t:"Bulk buying",max:5,costs:[140,290,500,820,1250],
+   d:()=>"Every unit on the truck costs less. " + (S.up.bulk
+     ? "You're paying " + (S.up.bulk*8) + "% under list right now; next level makes it " + ((S.up.bulk+1)*8) + "%."
+     : "No discount yet; the first level takes 8% off.")},
+  {id:"delivery",ic:"🚚",t:"Standing delivery",max:4,costs:[240,520,900,1450],
+   d:()=>"Free units dropped off every morning, on top of what you ordered. " + (S.up.delivery
+     ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "."
+     : "No standing delivery yet; the first level brings 3 a day.")},
+  {id:"thrift",ic:"🔪",t:"Careful hands",max:4,costs:[200,420,760,1250],
+   d:()=>"Chance a plate uses up one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
+  {id:"board",ic:"📋",t:"Order board",max:2,costs:[300,720],
+   d:()=>"See what the next guest through the door wants."},
+  {id:"surge",ic:"🌸",t:"House garnish",max:4,costs:[190,400,720,1200],
+   d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
+  {id:"cool",ic:"📝",t:"Tasting notes",max:4,costs:[260,540,950,1500],
+   d:()=>"A flavour they asked you to skip stings less. Currently keeping " +
+     Math.round(avoidFactor()*100) + "% of the pay instead of 35%."}
+];
+
+
+/* ============================ WORLD 2: THE LONG ROAD ============================ */
+
+const W2_ING = [
+  {id:"flat",n:"Flatbread",e:"🫓",tier:0,tags:["chewy","crunchy"]},
+  {id:"chick",n:"Chickpeas",e:"🫘",tier:0,tags:["creamy","rich"]},
+  {id:"date",n:"Dates",e:"🌴",tier:0,tags:["sweet","chewy"]},
+  {id:"mintl",n:"Desert mint",e:"🌿",tier:0,tags:["fresh","cold"]},
+  {id:"goat",n:"Goat curd",e:"🧀",tier:0,tags:["rich","salty"]},
+  {id:"rocksalt",n:"Rock salt",e:"🧂",tier:0,tags:["salty"]},
+
+  {id:"fig2",n:"Figs",e:"🫐",tier:1,tags:["sweet","creamy"]},
+  {id:"lemon2",n:"Preserved lemon",e:"🍋",tier:1,tags:["sour","salty"]},
+  {id:"lamb",n:"Lamb",e:"🍖",tier:1,tags:["rich","smoky"]},
+  {id:"yog",n:"Yoghurt",e:"🥛",tier:1,tags:["creamy","sour"]},
+  {id:"olivec",n:"Green olives",e:"🫒",tier:1,tags:["salty","bitter"]},
+  {id:"pistachio",n:"Pistachios",e:"🥜",tier:1,tags:["crunchy","rich"]},
+
+  {id:"cumin",n:"Cumin",e:"🟤",tier:2,tags:["smoky","herbal"]},
+  {id:"harissa",n:"Harissa",e:"🌶️",tier:2,tags:["spicy","smoky"]},
+  {id:"rose",n:"Rosewater",e:"🌹",tier:2,tags:["sweet","herbal"]},
+  {id:"sumac",n:"Sumac",e:"🔴",tier:2,tags:["sour","herbal"]},
+  {id:"honey2",n:"Wild honey",e:"🍯",tier:2,tags:["sweet","rich"]},
+  {id:"cinnamon",n:"Cinnamon",e:"🪵",tier:2,tags:["sweet","spicy"]},
+
+  {id:"pomeg",n:"Pomegranate",e:"🍎",tier:3,tags:["sour","sweet"]},
+  {id:"coal",n:"Ember coal",e:"🔥",tier:3,tags:["smoky","bitter"]},
+  {id:"almond",n:"Almonds",e:"🌰",tier:3,tags:["crunchy","creamy"]},
+  {id:"brine",n:"Cured fish",e:"🐟",tier:3,tags:["salty","briny"]},
+  {id:"apricot",n:"Apricot",e:"🍑",tier:3,tags:["sweet","sour"]},
+  {id:"saff2",n:"Saffron thread",e:"✳️",tier:3,tags:["herbal","rich"]},
+
+  {id:"yak",n:"Yak butter",e:"🧈",tier:4,tags:["rich","creamy"]},
+  {id:"juniper",n:"Juniper",e:"🌲",tier:4,tags:["herbal","bitter"]},
+  {id:"snow",n:"Snowmelt",e:"❄️",tier:4,tags:["cold","fresh"]},
+  {id:"longpep",n:"Long pepper",e:"⚫",tier:4,tags:["spicy","bitter"]},
+  {id:"barley",n:"Roast barley",e:"🌾",tier:4,tags:["chewy","smoky"]},
+  {id:"curd",n:"Smoked curd",e:"🟧",tier:4,tags:["smoky","creamy"]},
+
+  {id:"gsugar",n:"Gilded sugar",e:"✨",tier:5,tags:["sweet","crunchy"]},
+  {id:"resin",n:"Amber resin",e:"🟠",tier:5,tags:["herbal","sweet"]},
+  {id:"nightfruit",n:"Nightfruit",e:"🍇",tier:5,tags:["sour","cold"]},
+  {id:"ghost",n:"Ghost chili",e:"🫑",tier:5,tags:["spicy","fresh"]},
+  {id:"dtruffle",n:"Desert truffle",e:"🍄",tier:5,tags:["rich","herbal"]},
+  {id:"frank",n:"Frankincense",e:"💠",tier:5,tags:["bitter","herbal"]},
+
+  {id:"paradise",n:"Grains of paradise",e:"🫚",tier:6,tags:["spicy","herbal"]},
+  {id:"clotted",n:"Clotted cream",e:"🍨",tier:6,tags:["creamy","rich"]},
+  {id:"blackfig",n:"Black fig",e:"🟣",tier:6,tags:["sweet","bitter"]},
+  {id:"rockcandy",n:"Rock candy",e:"🍬",tier:6,tags:["sweet","crunchy"]},
+  {id:"sunchili",n:"Sun-dried chili",e:"🥀",tier:6,tags:["spicy","smoky"]},
+  {id:"wellice",n:"Well ice",e:"💧",tier:6,tags:["cold","fresh"]}
+];
+
+const W2_TIERS = ["Cart stores","Oasis market","Spice road","Salt flats","The high pass",
+  "Night bazaar","The caravan's own"];
+
+const W2_RECIPES = [
+  [["chick","flat"],"Chickpea Flatbread",["rich"]],
+  [["chick","rocksalt"],"Salted Hummus",["creamy"]],
+  [["date","goat"],"Stuffed Dates",["sweet"]],
+  [["flat","goat"],"Curd Flatbread",["rich"]],
+  [["date","mintl"],"Mint & Date",["fresh"]],
+  [["chick","mintl"],"Herbed Chickpeas",["fresh"]],
+  [["flat","rocksalt"],"Salt Crust Bread",["crunchy"]],
+  [["goat","mintl"],"Mint Curd",["fresh"]],
+  [["date","flat"],"Date Roll",["chewy"]],
+  [["chick","goat"],"Chickpea Mash",["creamy"]],
+  [["date","rocksalt"],"Salted Date",["salty"]],
+  [["goat","rocksalt"],"Cured Curd",["salty"]],
+  [["chick","date"],"Sweet Mash",["sweet"]],
+  [["flat","mintl"],"Mint Wrap",["fresh"]],
+  [["mintl","rocksalt"],"Mint Salt",["cold"]],
+
+  [["flat","lamb"],"Lamb Wrap",["rich"]],
+  [["mintl","yog"],"Mint Yoghurt",["cold"]],
+  [["chick","lemon2"],"Lemon Hummus",["sour"]],
+  [["flat","olivec"],"Olive Bread",["salty"]],
+  [["date","pistachio"],"Pistachio Dates",["crunchy"]],
+  [["fig2","goat"],"Fig & Curd",["sweet"]],
+  [["lamb","rocksalt"],"Salt Lamb",["smoky"]],
+  [["chick","yog"],"Creamed Chickpea",["creamy"]],
+  [["lamb","lemon2"],"Lemon Lamb",["sour"]],
+  [["goat","olivec"],"Olive & Curd",["salty"]],
+  [["pistachio","yog"],"Pistachio Cream",["crunchy"]],
+  [["fig2","pistachio"],"Fig Brittle",["crunchy"]],
+  [["lemon2","olivec"],"The Preserved Plate",["bitter"]],
+  [["fig2","yog"],"Fig Cream",["creamy"]],
+  [["lamb","mintl"],"Mint Lamb",["fresh"]],
+  [["flat","pistachio"],"Nut Flatbread",["crunchy"]],
+  [["date","fig2"],"Twice Sweet",["sweet"]],
+  [["lemon2","yog"],"Soured Cream",["sour"]],
+  [["lamb","olivec"],"Olive Lamb",["salty"]],
+  [["fig2","lamb"],"Fig-Glazed Lamb",["sweet"]],
+
+  [["chick","cumin"],"Cumin Chickpeas",["smoky"]],
+  [["harissa","lamb"],"Harissa Lamb",["spicy"]],
+  [["rose","yog"],"Rose Cream",["sweet"]],
+  [["flat","sumac"],"Sumac Bread",["sour"]],
+  [["goat","honey2"],"Honeyed Curd",["sweet"]],
+  [["cinnamon","date"],"Cinnamon Dates",["spicy"]],
+  [["chick","harissa"],"Fire Hummus",["spicy"]],
+  [["cumin","lamb"],"Cumin Lamb",["smoky"]],
+  [["pistachio","rose"],"Rose Brittle",["crunchy"]],
+  [["lamb","sumac"],"Sumac Lamb",["sour"]],
+  [["honey2","pistachio"],"Honey Brittle",["crunchy"]],
+  [["cinnamon","yog"],"Spiced Yoghurt",["spicy"]],
+  [["honey2","rose"],"Rose Nectar",["sweet"]],
+  [["cumin","olivec"],"Cumin Olives",["smoky"]],
+  [["goat","harissa"],"Fire Curd",["spicy"]],
+  [["sumac","yog"],"Sumac Yoghurt",["sour"]],
+  [["cinnamon","flat"],"Cinnamon Bread",["sweet"]],
+  [["fig2","honey2"],"Honeyed Figs",["sweet"]],
+  [["cumin","rose"],"The Spice Market",["herbal"]],
+  [["harissa","olivec"],"Fire Olives",["spicy"]],
+  [["cinnamon","honey2"],"Warm Nectar",["rich"]],
+
+  [["pomeg","yog"],"Pomegranate Cream",["sour"]],
+  [["coal","lamb"],"Ember Lamb",["smoky"]],
+  [["almond","honey2"],"Almond Honey",["crunchy"]],
+  [["brine","flat"],"Cured Fish Bread",["salty"]],
+  [["apricot","rose"],"Apricot Rose",["sweet"]],
+  [["chick","saff2"],"Saffron Chickpeas",["herbal"]],
+  [["lamb","pomeg"],"Pomegranate Lamb",["sour"]],
+  [["coal","goat"],"Ember Curd",["smoky"]],
+  [["almond","date"],"Almond Dates",["crunchy"]],
+  [["brine","lemon2"],"Cured Citrus",["salty"]],
+  [["apricot","yog"],"Apricot Cream",["creamy"]],
+  [["lamb","saff2"],"Saffron Lamb",["herbal"]],
+  [["mintl","pomeg"],"Pomegranate Mint",["fresh"]],
+  [["brine","coal"],"Smoked Catch",["smoky"]],
+  [["almond","rose"],"Rose Almond",["crunchy"]],
+  [["apricot","pistachio"],"Apricot Brittle",["crunchy"]],
+  [["honey2","saff2"],"Saffron Honey",["rich"]],
+  [["pomeg","sumac"],"Twice Sour",["sour"]],
+  [["coal","harissa"],"Ember Fire",["spicy"]],
+  [["almond","apricot"],"Orchard Plate",["sweet"]],
+
+  [["flat","yak"],"Butter Flatbread",["rich"]],
+  [["juniper","lamb"],"Juniper Lamb",["herbal"]],
+  [["pomeg","snow"],"Pomegranate Ice",["cold"]],
+  [["chick","longpep"],"Peppered Chickpeas",["spicy"]],
+  [["barley","yog"],"Barley Bowl",["chewy"]],
+  [["coal","curd"],"Smoked Curd Plate",["smoky"]],
+  [["barley","yak"],"Butter Barley",["rich"]],
+  [["curd","juniper"],"Juniper Curd",["herbal"]],
+  [["mintl","snow"],"Mint Ice",["cold"]],
+  [["lamb","longpep"],"Peppered Lamb",["spicy"]],
+  [["barley","honey2"],"Sweet Barley",["sweet"]],
+  [["curd","flat"],"Curd Bread",["creamy"]],
+  [["saff2","yak"],"Saffron Butter",["rich"]],
+  [["juniper","snow"],"Juniper Frost",["cold"]],
+  [["coal","longpep"],"Black Ember",["bitter"]],
+  [["barley","cumin"],"Cumin Barley",["smoky"]],
+  [["apricot","snow"],"Apricot Frost",["cold"]],
+  [["curd","sumac"],"Soured Curd",["sour"]],
+  [["longpep","yak"],"Peppered Butter",["spicy"]],
+
+  [["gsugar","rose"],"Gilded Rose",["sweet"]],
+  [["honey2","resin"],"Resin Nectar",["herbal"]],
+  [["nightfruit","snow"],"Nightfruit Ice",["cold"]],
+  [["ghost","lamb"],"Ghost Lamb",["spicy"]],
+  [["barley","dtruffle"],"Truffle Barley",["rich"]],
+  [["frank","yog"],"Incense Cream",["bitter"]],
+  [["almond","gsugar"],"Gilded Almonds",["crunchy"]],
+  [["apricot","resin"],"Resin Apricot",["sweet"]],
+  [["nightfruit","pomeg"],"Night Sour",["sour"]],
+  [["ghost","harissa"],"Twice Fire",["spicy"]],
+  [["dtruffle","yak"],"Truffle Butter",["rich"]],
+  [["frank","juniper"],"Bitter Smoke",["herbal"]],
+  [["dtruffle","gsugar"],"Gilded Truffle",["rich"]],
+  [["frank","nightfruit"],"Nightfall Cup",["bitter"]],
+  [["curd","ghost"],"Fire Curd Plate",["spicy"]],
+  [["gsugar","resin"],"Amber Sugar",["sweet"]],
+  [["dtruffle","frank"],"The Deep Cellar",["herbal"]],
+
+  [["chick","flat","lemon2"],"The Road Plate",["creamy"]],
+  [["flat","harissa","lamb"],"Caravan Wrap",["spicy"]],
+  [["pistachio","rose","yog"],"Bazaar Cream",["sweet"]],
+  [["coal","cumin","lamb"],"Ember Feast",["smoky"]],
+  [["mintl","pomeg","snow"],"Oasis Ice",["cold"]],
+  [["barley","saff2","yak"],"High Pass Bowl",["rich"]],
+  [["almond","gsugar","rose"],"Night Sweet",["crunchy"]],
+  [["barley","curd","dtruffle"],"The Truffle Table",["rich"]],
+  [["frank","nightfruit","resin"],"The Long Road",["herbal"]],
+  [["apricot","honey2","pistachio"],"Traveller's Board",["sweet"]],
+  [["brine","cumin","flat"],"Salt Flat Supper",["salty"]],
+  [["ghost","longpep","snow"],"Hot and Cold",["spicy"]],
+  [["dtruffle","gsugar","saff2","yak"],"The Caravan Master's Plate",["rich"]],
+  [["cumin","ghost","harissa","longpep"],"Six Fires",["spicy"]],
+  [["nightfruit","pomeg","rose","snow"],"Midnight Oasis",["cold"]],
+
+  [["lamb","paradise"],"Paradise Lamb",["spicy"]],
+  [["clotted","date"],"Cream & Date",["creamy"]],
+  [["blackfig","goat"],"Black Fig & Curd",["bitter"]],
+  [["rockcandy","almond"],"Candied Almonds",["crunchy"]],
+  [["sunchili","chick"],"Sun-Fire Hummus",["spicy"]],
+  [["mintl","wellice"],"Well Mint",["cold"]],
+  [["clotted","rose"],"Rose Cream Pot",["sweet"]],
+  [["blackfig","honey2"],"Black Fig Nectar",["sweet"]],
+  [["paradise","yog"],"Paradise Yoghurt",["spicy"]],
+  [["rockcandy","frank"],"Bitter Candy",["bitter"]],
+  [["sunchili","coal"],"Sun and Ember",["smoky"]],
+  [["pomeg","wellice"],"Well-Chilled Pomegranate",["cold"]],
+  [["clotted","gsugar"],"Gilded Cream",["sweet"]],
+  [["blackfig","juniper"],"Fig & Juniper",["herbal"]],
+  [["paradise","lamb","sunchili"],"The Fire Caravan",["spicy"]],
+  [["clotted","rockcandy","rose"],"Bazaar Sweet Plate",["crunchy"]],
+  [["blackfig","frank","wellice"],"Last Well",["bitter"]],
+  [["clotted","dtruffle","paradise","yak"],"The Waystation Feast",["rich"]]
+];
+
+const W2_FORMS = [
+  {tag:"cold",words:["Sherbet","Chill","Frost Cup"]},
+  {tag:"spicy",words:["Fire Plate","Scorch","Heat"]},
+  {tag:"smoky",words:["Ember Plate","Smoke","Coalbowl"]},
+  {tag:"crunchy",words:["Brittle","Crackle","Shard"]},
+  {tag:"creamy",words:["Mash","Whip","Silk"]},
+  {tag:"sweet",words:["Pastry","Comfit","Sweetmeat"]},
+  {tag:"sour",words:["Tang","Pickle","Bite"]},
+  {tag:"bitter",words:["Draught","Dark Cup","Steep"]},
+  {tag:"briny",words:["Cure","Preserve","Jar"]},
+  {tag:"chewy",words:["Fold","Roll","Knot"]},
+  {tag:"rich",words:["Stew","Tagine","Braise"]},
+  {tag:"herbal",words:["Tisane","Green Plate","Bundle"]},
+  {tag:"salty",words:["Crust","Cellar","Board"]},
+  {tag:"fresh",words:["Salad","Sprig","Cool Plate"]}
+];
+
+const W2_CUSTOMERS = [
+  {e:"🐪",n:"Sabir"},{e:"🦎",n:"Tove"},{e:"🦅",n:"Marek"},{e:"🐐",n:"Isolde"},
+  {e:"🦊",n:"Rafiq"},{e:"🐍",n:"Vex"},{e:"🦂",n:"Halla"},{e:"🕊️",n:"Juno"},
+  {e:"🐎",n:"Corin"},{e:"🦡",n:"Bram"},{e:"🦉",n:"Nell"},{e:"🐕",n:"Osk"},
+  {e:"🦇",n:"Sable"},{e:"🐜",n:"Fen-Ra"},{e:"🦋",n:"Amira"},{e:"🐿️",n:"Pico"},
+  {e:"🦧",n:"Dov"},{e:"🐖",n:"Marn"},{e:"🦤",n:"Elsa"},{e:"🐓",n:"Rell"}
+];
+
+const W2_ASKS = [
+  "Three days of dust. Something {w}.",
+  "Something {w} before I ride on.",
+  "The road was long. Make it {w}.",
+  "{w}, and I'll pay well.",
+  "I've been dreaming of something {w}.",
+  "Give me {w}. Nothing clever.",
+  "They said you do {w} out here.",
+  "Whatever you have, so long as it's {w}.",
+  "One plate. {w}.",
+  "My camel eats better than I do. Something {w}."
+];
+
+const W2_UPGRADES = [
+  {id:"crate",ic:"📦",t:"New ingredients",max:6,costs:[140,320,600,1050,1700,2600],
+   d:()=>crateBlurb()},
+  {id:"bowl",ic:"🍽️",t:"Bigger platter",max:3,costs:[180,520,1350],
+   d:()=>"Combine more at once. Now " + bowlSize() + " slots."},
+  {id:"calm",ic:"⛺",t:"Shaded awning",max:5,costs:[120,220,380,620,950],
+   d:()=>"Travellers rest longer before moving on."},
+  {id:"apron",ic:"🧥",t:"Traveller's coat",max:5,costs:[200,360,610,990,1500],
+   d:()=>"Better tips on every plate. Currently +" + Math.round((tipMult()-1)*100) + "%."},
+  {id:"bulk",ic:"⚖️",t:"Caravan rates",max:5,costs:[160,330,570,930,1400],
+   d:()=>"Every unit on the caravan costs less. " + (S.up.bulk
+     ? "You're paying " + (S.up.bulk*8) + "% under list; next level makes it " + ((S.up.bulk+1)*8) + "%."
+     : "No discount yet; the first level takes 8% off.")},
+  {id:"delivery",ic:"🐫",t:"Standing caravan",max:4,costs:[280,600,1050,1650],
+   d:()=>"Free units every morning, on top of what you ordered. " + (S.up.delivery
+     ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "."
+     : "No standing caravan yet; the first level brings 3 a day.")},
+  {id:"thrift",ic:"🔪",t:"Steady knife",max:4,costs:[230,480,870,1400],
+   d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
+  {id:"board",ic:"🗞️",t:"Runner's word",max:2,costs:[340,800],
+   d:()=>"A runner tells you who's coming up the road next."},
+  {id:"surge",ic:"✴️",t:"Road spice",max:4,costs:[220,450,810,1350],
+   d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
+  {id:"cool",ic:"🗣️",t:"Trader's tongue",max:4,costs:[290,600,1050,1700],
+   d:()=>"A flavour they asked you to skip stings less. Currently keeping " +
+     Math.round(avoidFactor()*100) + "% of the pay instead of 35%."}
+];
+
+
+/* ============================ WORLD 3: THE LAST LIGHT ============================ */
+
+const W3_ING = [
+  {id:"ration",n:"Ration block",e:"🍱",tier:0,tags:["chewy","salty"]},
+  {id:"algae",n:"Algae paste",e:"🟩",tier:0,tags:["creamy","briny"]},
+  {id:"protein",n:"Protein curd",e:"🥚",tier:0,tags:["rich","creamy"]},
+  {id:"citruspod",n:"Citrus pod",e:"🍊",tier:0,tags:["sour","fresh"]},
+  {id:"saltc",n:"Salt cube",e:"🧂",tier:0,tags:["salty"]},
+  {id:"noodle",n:"Vat noodles",e:"🍜",tier:0,tags:["chewy","rich"]},
+
+  {id:"greens",n:"Hydro greens",e:"🥬",tier:1,tags:["fresh","herbal"]},
+  {id:"tomato",n:"Hydro tomato",e:"🍅",tier:1,tags:["sour","sweet"]},
+  {id:"pepper",n:"Hydro chili",e:"🌶️",tier:1,tags:["spicy"]},
+  {id:"mushroom",n:"Vat mushroom",e:"🍄",tier:1,tags:["rich","herbal"]},
+  {id:"soybean",n:"Soy curd",e:"🫛",tier:1,tags:["creamy","rich"]},
+  {id:"micromint",n:"Micro-mint",e:"🌱",tier:1,tags:["fresh","cold"]},
+
+  {id:"coffee",n:"Ship coffee",e:"☕",tier:2,tags:["bitter","rich"]},
+  {id:"sugar",n:"Sugar crystal",e:"🍬",tier:2,tags:["sweet","crunchy"]},
+  {id:"oil",n:"Frying oil",e:"🫗",tier:2,tags:["rich","crunchy"]},
+  {id:"vinegar",n:"Acid vinegar",e:"🧴",tier:2,tags:["sour","bitter"]},
+  {id:"printcheese",n:"Printed cheese",e:"🧀",tier:2,tags:["rich","salty"]},
+  {id:"hardtack",n:"Hard tack",e:"🍘",tier:2,tags:["crunchy","chewy"]},
+
+  {id:"driedfish",n:"Dried fish",e:"🐟",tier:3,tags:["salty","briny"]},
+  {id:"cargohoney",n:"Cargo honey",e:"🍯",tier:3,tags:["sweet","rich"]},
+  {id:"oldchoc",n:"Old chocolate",e:"🍫",tier:3,tags:["sweet","bitter"]},
+  {id:"brinedroot",n:"Brined roots",e:"🥒",tier:3,tags:["sour","crunchy"]},
+  {id:"smokedration",n:"Smoked ration",e:"🥓",tier:3,tags:["smoky","rich"]},
+  {id:"contraband",n:"Contraband spice",e:"🟠",tier:3,tags:["spicy","herbal"]},
+
+  {id:"cryoice",n:"Cryo ice",e:"❄️",tier:4,tags:["cold","fresh"]},
+  {id:"frozenberry",n:"Frozen berries",e:"🫐",tier:4,tags:["sour","sweet"]},
+  {id:"cryocream",n:"Cryo cream",e:"🥛",tier:4,tags:["creamy","cold"]},
+  {id:"cryosteak",n:"Cryo steak",e:"🥩",tier:4,tags:["rich","smoky"]},
+  {id:"oyster",n:"Vac oysters",e:"🦪",tier:4,tags:["briny","creamy"]},
+  {id:"frostlime",n:"Frost lime",e:"🟢",tier:4,tags:["sour","cold"]},
+
+  {id:"starsalt",n:"Star salt",e:"✨",tier:5,tags:["salty","cold"]},
+  {id:"emberoot",n:"Ember root",e:"🔥",tier:5,tags:["spicy","smoky"]},
+  {id:"glowmoss",n:"Glow moss",e:"💡",tier:5,tags:["herbal","fresh"]},
+  {id:"voidhoney",n:"Void honey",e:"🕳️",tier:5,tags:["sweet","bitter"]},
+  {id:"silkfruit",n:"Silk fruit",e:"🍑",tier:5,tags:["sweet","creamy"]},
+  {id:"ashpepper",n:"Ash pepper",e:"🌑",tier:5,tags:["spicy","bitter"]},
+
+  {id:"singularity",n:"Singularity salt",e:"🌀",tier:6,tags:["salty","bitter"]},
+  {id:"nebula",n:"Nebula sugar",e:"🌌",tier:6,tags:["sweet","cold"]},
+  {id:"cometice",n:"Comet ice",e:"☄️",tier:6,tags:["cold","crunchy"]},
+  {id:"relic",n:"Relic vinegar",e:"🏺",tier:6,tags:["sour","herbal"]},
+  {id:"iongold",n:"Ion gold",e:"🟡",tier:6,tags:["rich","sweet"]},
+  {id:"vacbloom",n:"Vacuum bloom",e:"🌸",tier:6,tags:["herbal","chewy"]}
+];
+
+const W3_TIERS = ["Galley stores","Hydroponics","Cargo manifest","Salvage bay",
+  "Cryo hold","Void market","The far shelf"];
+
+const W3_RECIPES = [
+  [["algae","ration"],"Standard Issue",["salty"]],
+  [["noodle","protein"],"Protein Noodles",["rich"]],
+  [["algae","citruspod"],"Citrus Paste",["sour"]],
+  [["ration","saltc"],"Salted Block",["salty"]],
+  [["algae","noodle"],"Green Noodles",["briny"]],
+  [["citruspod","protein"],"Citrus Curd",["sour"]],
+  [["noodle","ration"],"Double Carb",["chewy"]],
+  [["protein","saltc"],"Cured Curd",["salty"]],
+  [["algae","saltc"],"Salt Algae",["briny"]],
+  [["citruspod","noodle"],"Cold Noodle Cup",["fresh"]],
+  [["protein","ration"],"Ration Loaf",["rich"]],
+  [["citruspod","saltc"],"Preserved Pod",["sour"]],
+  [["algae","protein"],"Green Curd",["creamy"]],
+  [["noodle","saltc"],"Salt Noodles",["salty"]],
+  [["citruspod","ration"],"Bright Block",["fresh"]],
+
+  [["greens","protein"],"Garden Curd",["fresh"]],
+  [["noodle","tomato"],"Red Noodles",["sour"]],
+  [["pepper","ration"],"Hot Block",["spicy"]],
+  [["mushroom","noodle"],"Mushroom Bowl",["rich"]],
+  [["algae","soybean"],"Soy Paste",["creamy"]],
+  [["citruspod","micromint"],"Mint Citrus",["cold"]],
+  [["greens","tomato"],"Hydro Salad",["fresh"]],
+  [["pepper","soybean"],"Spiced Soy",["spicy"]],
+  [["mushroom","protein"],"Mushroom Curd",["rich"]],
+  [["saltc","tomato"],"Salted Tomato",["salty"]],
+  [["greens","micromint"],"Cool Greens",["cold"]],
+  [["noodle","soybean"],"Soy Noodles",["rich"]],
+  [["greens","mushroom"],"Forest Floor",["herbal"]],
+  [["pepper","tomato"],"Hot Red",["spicy"]],
+  [["micromint","soybean"],"Mint Soy",["fresh"]],
+  [["mushroom","tomato"],"Umami Bowl",["rich"]],
+
+  [["coffee","sugar"],"Ship Sweet",["sweet"]],
+  [["hardtack","oil"],"Fried Tack",["crunchy"]],
+  [["greens","vinegar"],"Sharp Salad",["sour"]],
+  [["hardtack","printcheese"],"The Printed Board",["salty"]],
+  [["citruspod","sugar"],"Candied Pod",["sweet"]],
+  [["coffee","protein"],"Coffee Curd",["bitter"]],
+  [["noodle","oil"],"Fried Noodles",["crunchy"]],
+  [["mushroom","vinegar"],"Pickled Mushroom",["sour"]],
+  [["pepper","printcheese"],"Hot Cheese",["spicy"]],
+  [["hardtack","sugar"],"Sugar Tack",["crunchy"]],
+  [["coffee","printcheese"],"Bitter Rind",["bitter"]],
+  [["oil","pepper"],"Chili Oil Cup",["spicy"]],
+  [["tomato","vinegar"],"Sharp Red",["sour"]],
+  [["mushroom","printcheese"],"Mushroom Melt",["rich"]],
+  [["oil","protein"],"Fried Curd",["crunchy"]],
+  [["greens","sugar"],"Candied Greens",["sweet"]],
+  [["hardtack","vinegar"],"Sour Tack",["sour"]],
+
+  [["driedfish","noodle"],"Fish Noodles",["briny"]],
+  [["cargohoney","hardtack"],"Honey Tack",["sweet"]],
+  [["coffee","oldchoc"],"Old Mocha",["bitter"]],
+  [["brinedroot","printcheese"],"Brine & Print",["sour"]],
+  [["ration","smokedration"],"Smoked Block",["smoky"]],
+  [["contraband","noodle"],"Contraband Bowl",["spicy"]],
+  [["citruspod","driedfish"],"Fish & Citrus",["sour"]],
+  [["cargohoney","protein"],"Honeyed Curd",["sweet"]],
+  [["oldchoc","sugar"],"Twice Sweet",["sweet"]],
+  [["brinedroot","smokedration"],"Smoke & Brine",["smoky"]],
+  [["contraband","mushroom"],"Spiced Mushroom",["herbal"]],
+  [["driedfish","greens"],"Sea Salad",["salty"]],
+  [["cargohoney","coffee"],"Sweet Ship Coffee",["sweet"]],
+  [["oil","oldchoc"],"Fried Chocolate",["crunchy"]],
+  [["brinedroot","tomato"],"Sour Red",["sour"]],
+  [["printcheese","smokedration"],"Smoked Melt",["rich"]],
+  [["contraband","driedfish"],"Spiced Fish",["spicy"]],
+  [["cargohoney","micromint"],"Mint Honey",["fresh"]],
+
+  [["cryoice","frozenberry"],"Berry Ice",["cold"]],
+  [["cryocream","oldchoc"],"Cocoa Cream",["creamy"]],
+  [["cryosteak","pepper"],"Peppered Steak",["spicy"]],
+  [["citruspod","oyster"],"Oyster & Citrus",["sour"]],
+  [["cryoice","frostlime"],"Lime Frost",["cold"]],
+  [["cryocream","frozenberry"],"Berry Cream",["sweet"]],
+  [["cryosteak","mushroom"],"Steak & Mushroom",["rich"]],
+  [["oyster","vinegar"],"Dressed Oysters",["sour"]],
+  [["frostlime","micromint"],"Frost Mint",["cold"]],
+  [["coffee","cryoice"],"Iced Ship Coffee",["cold"]],
+  [["cargohoney","cryocream"],"Honey Cream",["creamy"]],
+  [["cryosteak","smokedration"],"Double Smoke",["smoky"]],
+  [["cryocream","oyster"],"Oyster Cream",["creamy"]],
+  [["contraband","frostlime"],"Spiced Lime",["spicy"]],
+  [["frozenberry","sugar"],"Sugared Berries",["sweet"]],
+  [["coffee","cryocream"],"Flat Black",["rich"]],
+  [["cryosteak","oil"],"Seared Steak",["crunchy"]],
+
+  [["oyster","starsalt"],"Star-Salted Oysters",["salty"]],
+  [["cryosteak","emberoot"],"Ember Steak",["smoky"]],
+  [["glowmoss","greens"],"Glow Salad",["herbal"]],
+  [["coffee","voidhoney"],"Void Mocha",["bitter"]],
+  [["cryocream","silkfruit"],"Silk Cream",["creamy"]],
+  [["ashpepper","noodle"],"Ash Noodles",["spicy"]],
+  [["cryoice","starsalt"],"Star Frost",["cold"]],
+  [["brinedroot","emberoot"],"Ember Brine",["smoky"]],
+  [["glowmoss","micromint"],"Glow Mint",["fresh"]],
+  [["oldchoc","voidhoney"],"The Black Bar",["bitter"]],
+  [["frozenberry","silkfruit"],"Silk Berries",["sweet"]],
+  [["ashpepper","cryosteak"],"Ash Steak",["spicy"]],
+  [["driedfish","starsalt"],"Star Cure",["salty"]],
+  [["contraband","emberoot"],"Twice Fire",["spicy"]],
+  [["glowmoss","mushroom"],"Glow Broth",["herbal"]],
+  [["silkfruit","voidhoney"],"Void Silk",["sweet"]],
+
+  [["cryosteak","singularity"],"Event Horizon Steak",["salty"]],
+  [["cryocream","nebula"],"Nebula Cream",["cold"]],
+  [["cometice","frozenberry"],"Comet Berries",["crunchy"]],
+  [["oyster","relic"],"Relic Oysters",["sour"]],
+  [["iongold","silkfruit"],"Gilded Silk",["rich"]],
+  [["glowmoss","vacbloom"],"Bloom & Moss",["herbal"]],
+  [["singularity","voidhoney"],"Dark Matter",["bitter"]],
+  [["coffee","nebula"],"Nebula Brew",["sweet"]],
+  [["cometice","frostlime"],"Comet Frost",["cold"]],
+  [["greens","relic"],"Relic Salad",["herbal"]],
+  [["iongold","oldchoc"],"Gilded Bar",["sweet"]],
+  [["cryocream","vacbloom"],"Bloom Cream",["chewy"]],
+  [["cometice","nebula"],"Deep Field",["cold"]],
+  [["iongold","oyster"],"Gilded Oyster",["rich"]],
+  [["ashpepper","singularity"],"Absolute Zero",["bitter"]],
+
+  [["algae","citruspod","ration"],"The Standard Tray",["fresh"]],
+  [["mushroom","noodle","soybean"],"Galley Bowl",["rich"]],
+  [["coffee","cryocream","sugar"],"Long Watch",["rich"]],
+  [["cryosteak","emberoot","starsalt"],"Ember Service",["smoky"]],
+  [["cryoice","frozenberry","nebula"],"Cold Sky",["cold"]],
+  [["frostlime","oyster","relic"],"Salvage Crudo",["sour"]],
+  [["iongold","oldchoc","voidhoney"],"The Dark Bar",["bitter"]],
+  [["glowmoss","greens","vacbloom"],"Living Plate",["herbal"]],
+  [["ashpepper","contraband","pepper"],"Three Fires",["spicy"]],
+  [["cryocream","nebula","silkfruit"],"Silk Sky",["creamy"]],
+  [["cryosteak","iongold","singularity","starsalt"],"The Captain's Table",["rich"]],
+  [["cometice","nebula","relic","vacbloom"],"The Far Shelf",["cold"]],
+  [["ashpepper","contraband","emberoot","pepper"],"Four Alarm",["spicy"]]
+];
+
+const W3_FORMS = [
+  {tag:"cold",words:["Chiller","Cryo Cup","Cold Set"]},
+  {tag:"spicy",words:["Burner","Flare","Hot Tray"]},
+  {tag:"smoky",words:["Sear","Smoke Tray","Char Set"]},
+  {tag:"crunchy",words:["Crisps","Shatter","Crunch Tray"]},
+  {tag:"creamy",words:["Emulsion","Whip","Smooth Set"]},
+  {tag:"sweet",words:["Confection","Sweet Ration","Glaze"]},
+  {tag:"sour",words:["Acid Cup","Sharp Set","Bite"]},
+  {tag:"bitter",words:["Dark Cup","Extract","Reduction"]},
+  {tag:"briny",words:["Brine Tray","Catch","Preserve"]},
+  {tag:"chewy",words:["Block","Roll","Bind"]},
+  {tag:"rich",words:["Hot Tray","Braise","Full Set"]},
+  {tag:"herbal",words:["Infusion","Green Tray","Culture"]},
+  {tag:"salty",words:["Cure","Crust","Salt Set"]},
+  {tag:"fresh",words:["Salad","Cool Tray","Sprout"]}
+];
+
+const W3_CUSTOMERS = [
+  {e:"👨‍🚀",n:"Vance"},{e:"🛰️",n:"Orla"},{e:"🤖",n:"Unit-9"},{e:"👽",n:"Threnn"},
+  {e:"🧑‍🔧",n:"Bex"},{e:"🚀",n:"Kade"},{e:"🪐",n:"Sol"},{e:"🛸",n:"Mim"},
+  {e:"🌠",n:"Renna"},{e:"⚙️",n:"Hobb"},{e:"🔭",n:"Dr Ess"},{e:"📡",n:"Wire"},
+  {e:"🧬",n:"Cass"},{e:"💫",n:"Pilot Ora"},{e:"🔋",n:"Dun"},{e:"🧿",n:"Sable-2"},
+  {e:"🪞",n:"Echo"},{e:"⭐",n:"Nix"},{e:"🌑",n:"Kepler"},{e:"🧊",n:"Frost"}
+];
+
+const W3_ASKS = [
+  "Eighteen hours on shift. Something {w}.",
+  "Something {w} before the jump.",
+  "Long haul out here. Make it {w}.",
+  "{w}. I'm not fussy beyond that.",
+  "I've forgotten what {w} tastes like.",
+  "Give me {w} and I'll stop complaining.",
+  "Word on the relay is you do {w}.",
+  "Anything, as long as it's {w}.",
+  "One tray. {w}.",
+  "The autogalley can't do {w}. You can."
+];
+
+const W3_UPGRADES = [
+  {id:"crate",ic:"📦",t:"New ingredients",max:6,costs:[160,380,700,1200,1900,2900],
+   d:()=>crateBlurb()},
+  {id:"bowl",ic:"🍽️",t:"Wider tray",max:3,costs:[220,620,1600],
+   d:()=>"Combine more at once. Now " + bowlSize() + " slots."},
+  {id:"calm",ic:"🔆",t:"Warmer lighting",max:5,costs:[140,260,440,720,1100],
+   d:()=>"Crew linger longer before their shift calls them back."},
+  {id:"apron",ic:"🥼",t:"Galley whites",max:5,costs:[230,410,700,1150,1750],
+   d:()=>"Better tips on every tray. Currently +" + Math.round((tipMult()-1)*100) + "%."},
+  {id:"bulk",ic:"⚖️",t:"Freight rates",max:5,costs:[180,380,660,1080,1650],
+   d:()=>"Every unit on the manifest costs less. " + (S.up.bulk
+     ? "You're paying " + (S.up.bulk*8) + "% under list; next level makes it " + ((S.up.bulk+1)*8) + "%."
+     : "No discount yet; the first level takes 8% off.")},
+  {id:"delivery",ic:"🛰️",t:"Standing manifest",max:4,costs:[320,690,1200,1900],
+   d:()=>"Free units on every resupply, on top of what you ordered. " + (S.up.delivery
+     ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "."
+     : "No standing manifest yet; the first level brings 3 a day.")},
+  {id:"thrift",ic:"🔪",t:"Precise portions",max:4,costs:[260,550,1000,1600],
+   d:()=>"Chance a tray uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
+  {id:"board",ic:"📺",t:"Docking screen",max:2,costs:[380,900],
+   d:()=>"The screen shows who's coming through the airlock next."},
+  {id:"surge",ic:"🧪",t:"Flavour injector",max:4,costs:[250,510,920,1550],
+   d:()=>"Every tray leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
+  {id:"cool",ic:"📡",t:"Palate scanner",max:4,costs:[330,680,1200,1900],
+   d:()=>"A flavour they asked you to skip stings less. Currently keeping " +
+     Math.round(avoidFactor()*100) + "% of the pay instead of 35%."}
+];
+
+
+/* ============================ WORLD 4: THE CROSSWIND ============================ */
+
+const W4_ING = [
+  {id:"toast",n:"Field toast",e:"🍞",tier:0,tags:["chewy","crunchy"]},
+  {id:"egg4",n:"Hen egg",e:"🥚",tier:0,tags:["rich","creamy"]},
+  {id:"butter4",n:"Churned butter",e:"🧈",tier:0,tags:["rich","salty"]},
+  {id:"apple",n:"Windfall apple",e:"🍎",tier:0,tags:["sour","sweet"]},
+  {id:"salt4",n:"Airfield salt",e:"🧂",tier:0,tags:["salty"]},
+  {id:"oat",n:"Oats",e:"🥣",tier:0,tags:["chewy","creamy"]},
+
+  {id:"bacon",n:"Smoked bacon",e:"🥓",tier:1,tags:["smoky","salty"]},
+  {id:"coffee4",n:"Tower coffee",e:"☕",tier:1,tags:["bitter","rich"]},
+  {id:"cheddar",n:"Sharp cheddar",e:"🧀",tier:1,tags:["rich","sour"]},
+  {id:"honey4",n:"Clover honey",e:"🍯",tier:1,tags:["sweet","rich"]},
+  {id:"onion",n:"Fried onion",e:"🧅",tier:1,tags:["smoky","crunchy"]},
+  {id:"cream4",n:"Thick cream",e:"🥛",tier:1,tags:["creamy","sweet"]},
+
+  {id:"pear",n:"Pear",e:"🍐",tier:2,tags:["sweet","fresh"]},
+  {id:"plum",n:"Plum",e:"🟣",tier:2,tags:["sour","sweet"]},
+  {id:"walnut",n:"Walnut",e:"🌰",tier:2,tags:["crunchy","bitter"]},
+  {id:"thyme",n:"Wild thyme",e:"🌿",tier:2,tags:["herbal","fresh"]},
+  {id:"cider",n:"Dry cider",e:"🍺",tier:2,tags:["sour","bitter"]},
+  {id:"berrycrop",n:"Hedgerow berries",e:"🍓",tier:2,tags:["sweet","sour"]},
+
+  {id:"mussel",n:"Mussels",e:"🦪",tier:3,tags:["briny","rich"]},
+  {id:"samphire",n:"Samphire",e:"🌾",tier:3,tags:["salty","fresh"]},
+  {id:"mackerel",n:"Mackerel",e:"🐟",tier:3,tags:["briny","smoky"]},
+  {id:"spraysalt",n:"Sea-spray salt",e:"💠",tier:3,tags:["salty","cold"]},
+  {id:"lemon4",n:"Sea lemon",e:"🍋",tier:3,tags:["sour","fresh"]},
+  {id:"dulse",n:"Dulse",e:"🟩",tier:3,tags:["briny","herbal"]},
+
+  {id:"juniper4",n:"Mountain juniper",e:"🌲",tier:4,tags:["herbal","bitter"]},
+  {id:"venison",n:"Cured venison",e:"🍖",tier:4,tags:["rich","smoky"]},
+  {id:"bilberry",n:"Bilberry",e:"🫐",tier:4,tags:["sour","cold"]},
+  {id:"snowwater",n:"Snow water",e:"❄️",tier:4,tags:["cold","fresh"]},
+  {id:"pinehoney",n:"Pine honey",e:"🪵",tier:4,tags:["sweet","bitter"]},
+  {id:"alp",n:"Alp cheese",e:"🟨",tier:4,tags:["rich","creamy"]},
+
+  {id:"quail",n:"Quail egg",e:"🐣",tier:5,tags:["creamy","salty"]},
+  {id:"nettle",n:"Nettle",e:"🍃",tier:5,tags:["herbal","fresh"]},
+  {id:"chanterelle",n:"Chanterelle",e:"🍄",tier:5,tags:["rich","herbal"]},
+  {id:"rowan",n:"Rowan berry",e:"🔴",tier:5,tags:["sour","bitter"]},
+  {id:"hivecomb",n:"Wild comb",e:"🐝",tier:5,tags:["sweet","chewy"]},
+  {id:"birchsap",n:"Birch sap",e:"💧",tier:5,tags:["sweet","fresh"]},
+
+  {id:"stormsalt",n:"Storm salt",e:"⚡",tier:6,tags:["salty","spicy"]},
+  {id:"cloudcream",n:"Cloud cream",e:"☁️",tier:6,tags:["creamy","cold"]},
+  {id:"sunfruit",n:"Sunfruit",e:"🌞",tier:6,tags:["sweet","spicy"]},
+  {id:"rime",n:"Rime ice",e:"🧊",tier:6,tags:["cold","crunchy"]},
+  {id:"mist",n:"Mist essence",e:"🌫️",tier:6,tags:["fresh","cold"]},
+  {id:"ozone",n:"Ozone crystal",e:"🔆",tier:6,tags:["bitter","cold"]},
+
+  {id:"saffron4",n:"Wayfarer saffron",e:"✳️",tier:7,tags:["herbal","rich"]},
+  {id:"cardamom",n:"Cardamom",e:"🟤",tier:7,tags:["spicy","herbal"]},
+  {id:"driedfig",n:"Dried fig",e:"🟪",tier:7,tags:["sweet","chewy"]},
+  {id:"ashsalt",n:"Ash salt",e:"🌑",tier:7,tags:["salty","smoky"]},
+  {id:"longchili",n:"Long chili",e:"🌶️",tier:7,tags:["spicy","fresh"]},
+  {id:"darkchoc",n:"Bitter chocolate",e:"🍫",tier:7,tags:["bitter","sweet"]},
+
+  {id:"feathersugar",n:"Feather sugar",e:"✨",tier:8,tags:["sweet","crunchy"]},
+  {id:"stormhoney",n:"Storm honey",e:"🌀",tier:8,tags:["sweet","smoky"]},
+  {id:"skyberry",n:"Skyberry",e:"🔵",tier:8,tags:["sour","cold"]},
+  {id:"firethorn",n:"Firethorn",e:"🔥",tier:8,tags:["spicy","bitter"]},
+  {id:"cloudsilk",n:"Cloud silk",e:"🕸️",tier:8,tags:["chewy","creamy"]},
+  {id:"dawnsalt",n:"Dawn salt",e:"🌅",tier:8,tags:["salty","sweet"]}
+];
+
+const W4_TIERS = ["Field kitchen","Hangar stores","The orchard strip","Coastal flyway",
+  "Mountain updraft","The high hide","Stratosphere run","Migration cargo","The eyrie"];
+
+const W4_RECIPES = [
+  [["egg4","toast"],"Egg on Toast",["rich"]],
+  [["butter4","toast"],"Buttered Toast",["rich"]],
+  [["apple","oat"],"Apple Oats",["sweet"]],
+  [["salt4","toast"],"Salt Toast",["crunchy"]],
+  [["egg4","oat"],"Egg Porridge",["creamy"]],
+  [["apple","butter4"],"Apple Butter",["sweet"]],
+  [["oat","salt4"],"Salted Oats",["salty"]],
+  [["apple","toast"],"Apple Toast",["fresh"]],
+  [["butter4","egg4"],"Buttered Eggs",["creamy"]],
+  [["oat","toast"],"Double Grain",["chewy"]],
+  [["apple","salt4"],"Salted Apple",["sour"]],
+  [["butter4","oat"],"Butter Oats",["rich"]],
+  [["egg4","salt4"],"Salted Egg",["salty"]],
+  [["apple","egg4"],"Orchard Scramble",["sweet"]],
+  [["butter4","salt4"],"Salt Butter",["salty"]],
+
+  [["bacon","toast"],"Bacon Toast",["smoky"]],
+  [["coffee4","cream4"],"Tower Coffee",["rich"]],
+  [["cheddar","toast"],"Cheese on Toast",["rich"]],
+  [["honey4","oat"],"Honey Oats",["sweet"]],
+  [["egg4","onion"],"Onion Omelette",["smoky"]],
+  [["apple","cream4"],"Apple Cream",["creamy"]],
+  [["bacon","egg4"],"The Early Shift",["rich"]],
+  [["coffee4","honey4"],"Sweet Tower",["sweet"]],
+  [["cheddar","onion"],"Onion Rarebit",["smoky"]],
+  [["butter4","honey4"],"Honey Butter",["sweet"]],
+  [["onion","toast"],"Onion Toast",["crunchy"]],
+  [["cream4","oat"],"Cream Oats",["creamy"]],
+  [["bacon","cheddar"],"Bacon & Cheddar",["salty"]],
+  [["coffee4","oat"],"Coffee Oats",["bitter"]],
+  [["apple","cheddar"],"Cheese & Apple",["sour"]],
+  [["cream4","honey4"],"Honeyed Cream",["sweet"]],
+  [["bacon","onion"],"Fried Together",["smoky"]],
+  [["cream4","egg4"],"Custard Cup",["creamy"]],
+  [["coffee4","salt4"],"Salted Coffee",["bitter"]],
+  [["cheddar","honey4"],"Honey Rind",["sweet"]],
+
+  [["cheddar","pear"],"Pear & Cheddar",["sweet"]],
+  [["cream4","plum"],"Plum Cream",["sour"]],
+  [["honey4","walnut"],"Honeyed Walnuts",["crunchy"]],
+  [["egg4","thyme"],"Thyme Eggs",["herbal"]],
+  [["bacon","cider"],"Cider Bacon",["sour"]],
+  [["berrycrop","oat"],"Berry Oats",["sweet"]],
+  [["pear","walnut"],"Pear & Walnut",["crunchy"]],
+  [["plum","thyme"],"Thyme Plums",["herbal"]],
+  [["cheddar","walnut"],"Walnut Rind",["bitter"]],
+  [["butter4","thyme"],"Thyme Butter",["herbal"]],
+  [["cider","onion"],"Cider Onions",["sour"]],
+  [["berrycrop","cream4"],"Berries & Cream",["creamy"]],
+  [["honey4","pear"],"Honeyed Pear",["sweet"]],
+  [["plum","toast"],"Plum Toast",["sour"]],
+  [["coffee4","walnut"],"Walnut Coffee",["bitter"]],
+  [["cheddar","cider"],"Cider Rind",["sour"]],
+  [["berrycrop","honey4"],"Hedgerow Honey",["sweet"]],
+  [["pear","thyme"],"Pear & Thyme",["fresh"]],
+  [["plum","walnut"],"Plum & Walnut",["crunchy"]],
+  [["apple","cider"],"The Orchard Pair",["sour"]],
+  [["berrycrop","plum"],"Twice Tart",["sour"]],
+  [["cream4","pear"],"Pear Cream",["creamy"]],
+
+  [["cider","mussel"],"Mussels in Cider",["briny"]],
+  [["butter4","samphire"],"Buttered Samphire",["salty"]],
+  [["mackerel","toast"],"Mackerel on Toast",["smoky"]],
+  [["egg4","spraysalt"],"Sea-Salted Egg",["salty"]],
+  [["lemon4","mussel"],"Lemon Mussels",["sour"]],
+  [["dulse","oat"],"Dulse Oats",["briny"]],
+  [["cream4","mussel"],"Mussel Chowder",["creamy"]],
+  [["lemon4","samphire"],"Samphire & Lemon",["fresh"]],
+  [["lemon4","mackerel"],"Soused Mackerel",["sour"]],
+  [["spraysalt","toast"],"Spray Toast",["crunchy"]],
+  [["cheddar","dulse"],"Dulse Rind",["briny"]],
+  [["mussel","thyme"],"Herbed Mussels",["herbal"]],
+  [["egg4","samphire"],"Samphire Eggs",["salty"]],
+  [["mackerel","onion"],"Mackerel & Onion",["smoky"]],
+  [["spraysalt","walnut"],"Salted Walnuts",["salty"]],
+  [["cream4","lemon4"],"Lemon Cream",["sour"]],
+  [["dulse","mackerel"],"The Full Catch",["briny"]],
+  [["bacon","samphire"],"Coast Breakfast",["salty"]],
+  [["lemon4","pear"],"Lemon Pear",["fresh"]],
+  [["mussel","spraysalt"],"Salt-Steamed Mussels",["briny"]],
+  [["butter4","dulse"],"Dulse Butter",["briny"]],
+
+  [["juniper4","venison"],"Juniper Venison",["herbal"]],
+  [["bilberry","cream4"],"Bilberry Cream",["sour"]],
+  [["lemon4","snowwater"],"Snow Lemon",["cold"]],
+  [["oat","pinehoney"],"Pine Honey Oats",["sweet"]],
+  [["alp","toast"],"Alp Toast",["rich"]],
+  [["plum","venison"],"Venison & Plum",["sour"]],
+  [["juniper4","mackerel"],"Juniper Mackerel",["herbal"]],
+  [["bilberry","honey4"],"Bilberry Honey",["sweet"]],
+  [["berrycrop","snowwater"],"Berry Frost",["cold"]],
+  [["pinehoney","walnut"],"Pine Brittle",["crunchy"]],
+  [["alp","pear"],"Alp & Pear",["sweet"]],
+  [["thyme","venison"],"Thyme Venison",["herbal"]],
+  [["cider","juniper4"],"Juniper Cider",["bitter"]],
+  [["bilberry","snowwater"],"Bilberry Ice",["cold"]],
+  [["coffee4","pinehoney"],"Pine Coffee",["bitter"]],
+  [["alp","onion"],"Alp Melt",["smoky"]],
+  [["bacon","venison"],"The Smokehouse Plate",["smoky"]],
+  [["alp","juniper4"],"Juniper Rind",["herbal"]],
+  [["cream4","snowwater"],"Iced Cream",["cold"]],
+  [["alp","pinehoney"],"Honeyed Alp",["sweet"]],
+  [["bilberry","venison"],"Bilberry Venison",["rich"]],
+
+  [["quail","toast"],"Quail on Toast",["creamy"]],
+  [["nettle","oat"],"Nettle Porridge",["herbal"]],
+  [["butter4","chanterelle"],"Buttered Chanterelles",["rich"]],
+  [["rowan","venison"],"Rowan Venison",["sour"]],
+  [["alp","hivecomb"],"Comb & Alp",["sweet"]],
+  [["birchsap","snowwater"],"Birch Frost",["fresh"]],
+  [["quail","samphire"],"Quail & Samphire",["salty"]],
+  [["cream4","nettle"],"Nettle Soup",["creamy"]],
+  [["chanterelle","egg4"],"Chanterelle Eggs",["rich"]],
+  [["honey4","rowan"],"Rowan Honey",["bitter"]],
+  [["hivecomb","walnut"],"Comb & Walnut",["crunchy"]],
+  [["birchsap","coffee4"],"Birch Coffee",["sweet"]],
+  [["chanterelle","quail"],"Nest Plate",["rich"]],
+  [["nettle","thyme"],"Green Bundle",["herbal"]],
+  [["chanterelle","venison"],"Forest Floor",["rich"]],
+  [["cider","rowan"],"Rowan Cider",["bitter"]],
+  [["birchsap","hivecomb"],"Twice Sweet",["sweet"]],
+  [["nettle","quail"],"Nettle Nest",["fresh"]],
+  [["birchsap","pear"],"Birch Pear",["sweet"]],
+  [["bilberry","rowan"],"Bitter Berries",["sour"]],
+  [["alp","chanterelle"],"Mushroom Melt",["creamy"]],
+
+  [["stormsalt","venison"],"Storm-Salted Venison",["salty"]],
+  [["berrycrop","cloudcream"],"Cloud Berries",["creamy"]],
+  [["honey4","sunfruit"],"Sunfruit Honey",["sweet"]],
+  [["lemon4","rime"],"Rime Lemon",["cold"]],
+  [["mist","nettle"],"Mist Greens",["fresh"]],
+  [["coffee4","ozone"],"Ozone Coffee",["bitter"]],
+  [["egg4","stormsalt"],"Storm Egg",["spicy"]],
+  [["cloudcream","coffee4"],"Cloud Coffee",["creamy"]],
+  [["chanterelle","sunfruit"],"Sunfruit Mushrooms",["spicy"]],
+  [["bilberry","rime"],"Rime Berries",["cold"]],
+  [["birchsap","mist"],"Mist Sap",["fresh"]],
+  [["ozone","rime"],"Cold Air",["cold"]],
+  [["mackerel","stormsalt"],"Storm Catch",["salty"]],
+  [["cloudcream","sunfruit"],"Sun Cream",["sweet"]],
+  [["cloudcream","rime"],"Cloud Ice",["cold"]],
+  [["mist","thyme"],"Mist Thyme",["herbal"]],
+  [["onion","stormsalt"],"Storm Onions",["spicy"]],
+  [["mist","quail"],"Mist Nest",["fresh"]],
+  [["ozone","snowwater"],"Thin Water",["bitter"]],
+  [["cloudcream","hivecomb"],"Comb Cream",["sweet"]],
+  [["rime","sunfruit"],"Sun and Ice",["cold"]],
+
+  [["quail","saffron4"],"Saffron Quail",["herbal"]],
+  [["cardamom","coffee4"],"Cardamom Coffee",["spicy"]],
+  [["alp","driedfig"],"Fig & Alp",["chewy"]],
+  [["ashsalt","venison"],"Ash-Cured Venison",["smoky"]],
+  [["longchili","mussel"],"Chili Mussels",["spicy"]],
+  [["cream4","darkchoc"],"Dark Cream",["bitter"]],
+  [["mussel","saffron4"],"Saffron Mussels",["rich"]],
+  [["cardamom","honey4"],"Cardamom Honey",["spicy"]],
+  [["driedfig","walnut"],"Fig & Walnut",["crunchy"]],
+  [["ashsalt","mackerel"],"Ash Mackerel",["smoky"]],
+  [["longchili","onion"],"Chili Onions",["spicy"]],
+  [["coffee4","darkchoc"],"The Dark Tower",["bitter"]],
+  [["oat","saffron4"],"Saffron Oats",["herbal"]],
+  [["cardamom","pear"],"Cardamom Pear",["spicy"]],
+  [["darkchoc","driedfig"],"Fig Bar",["sweet"]],
+  [["ashsalt","egg4"],"Ash Egg",["smoky"]],
+  [["chanterelle","longchili"],"Fire Mushrooms",["spicy"]],
+  [["darkchoc","rowan"],"Bitter Bar",["bitter"]],
+  [["cardamom","cloudcream"],"Cardamom Cream",["spicy"]],
+  [["alp","saffron4"],"Saffron Rind",["rich"]],
+  [["driedfig","hivecomb"],"Fig Comb",["chewy"]],
+
+  [["cloudcream","feathersugar"],"Feathered Cream",["sweet"]],
+  [["stormhoney","toast"],"Storm Honey Toast",["smoky"]],
+  [["rime","skyberry"],"Skyberry Ice",["cold"]],
+  [["firethorn","venison"],"Firethorn Venison",["spicy"]],
+  [["cloudsilk","hivecomb"],"Silk & Comb",["chewy"]],
+  [["dawnsalt","egg4"],"Dawn Egg",["salty"]],
+  [["feathersugar","walnut"],"Gilded Walnuts",["crunchy"]],
+  [["alp","stormhoney"],"Storm Rind",["smoky"]],
+  [["cream4","skyberry"],"Skyberry Cream",["cold"]],
+  [["darkchoc","firethorn"],"Firethorn Bar",["spicy"]],
+  [["cloudcream","cloudsilk"],"Double Cloud",["creamy"]],
+  [["dawnsalt","mackerel"],"Dawn Catch",["salty"]],
+  [["darkchoc","feathersugar"],"Gilded Bar",["sweet"]],
+  [["coffee4","stormhoney"],"Storm Coffee",["smoky"]],
+  [["rowan","skyberry"],"Sky Sour",["sour"]],
+  [["firethorn","longchili"],"Twice Fire",["spicy"]],
+  [["birchsap","cloudsilk"],"Silk Sap",["sweet"]],
+  [["dawnsalt","feathersugar"],"Dawn & Gold",["sweet"]],
+  [["mist","skyberry"],"Sky Mist",["cold"]],
+  [["firethorn","stormhoney"],"Storm Fire",["spicy"]],
+  [["cloudsilk","ozone"],"Thin Silk",["bitter"]],
+
+  [["bacon","egg4","toast"],"The Full Breakfast",["rich"]],
+  [["apple","cream4","oat"],"Orchard Bowl",["sweet"]],
+  [["lemon4","mussel","samphire"],"The Coast Plate",["briny"]],
+  [["chanterelle","quail","thyme"],"The Hide Plate",["herbal"]],
+  [["bilberry","cream4","snowwater"],"Mountain Ice",["cold"]],
+  [["cloudcream","rime","skyberry"],"Cloud Base",["cold"]],
+  [["cardamom","coffee4","cream4"],"Tower Special",["spicy"]],
+  [["ashsalt","mackerel","onion"],"Smokehouse Catch",["smoky"]],
+  [["driedfig","feathersugar","walnut"],"Gilded Board",["crunchy"]],
+  [["firethorn","longchili","stormsalt"],"Three Fires",["spicy"]],
+  [["dulse","mackerel","spraysalt"],"The Flyway",["briny"]],
+  [["juniper4","rowan","venison"],"The Updraft",["herbal"]],
+  [["birchsap","cloudsilk","hivecomb"],"The Eyrie Sweet",["chewy"]],
+  [["bacon","cheddar","egg4","toast"],"The Crosswind Special",["rich"]],
+  [["cloudcream","feathersugar","skyberry","stormhoney"],"First Light",["sweet"]],
+  [["ashsalt","darkchoc","firethorn","ozone"],"Night Flight",["bitter"]],
+  [["mist","ozone","rime","snowwater"],"Altitude",["cold"]]
+];
+
+const W4_FORMS = [
+  {tag:"cold",words:["Frost Plate","Chill","Cold Front"]},
+  {tag:"spicy",words:["Burner","Hot Plate","Scorch"]},
+  {tag:"smoky",words:["Smoke Plate","Char","Kiln"]},
+  {tag:"crunchy",words:["Crisps","Brittle","Snap"]},
+  {tag:"creamy",words:["Whip","Custard","Fold"]},
+  {tag:"sweet",words:["Tart","Trifle","Bake"]},
+  {tag:"sour",words:["Sharp Plate","Pickle","Bite"]},
+  {tag:"bitter",words:["Dark Cup","Steep","Reduction"]},
+  {tag:"briny",words:["Catch","Haul","Landing"]},
+  {tag:"chewy",words:["Roll","Knot","Bap"]},
+  {tag:"rich",words:["Fry-Up","Braise","Full Plate"]},
+  {tag:"herbal",words:["Bundle","Green Plate","Infusion"]},
+  {tag:"salty",words:["Crust","Cure","Board"]},
+  {tag:"fresh",words:["Salad","Updraft","Cool Plate"]}
+];
+
+const W4_CUSTOMERS = [
+  {e:"🦅",n:"Captain Wren"},{e:"🕊️",n:"Dove"},{e:"🦆",n:"Mallory"},{e:"🦉",n:"Athel"},
+  {e:"🐦",n:"Pip"},{e:"🦢",n:"Signet"},{e:"🦜",n:"Kea"},{e:"🐧",n:"Skua"},
+  {e:"🦩",n:"Flamme"},{e:"🪶",n:"Quillon"},{e:"✈️",n:"Reyes"},{e:"🛩️",n:"Novak"},
+  {e:"🚁",n:"Hale"},{e:"🪂",n:"Drift"},{e:"🎈",n:"Bertie"},{e:"🦃",n:"Grouse"},
+  {e:"🐓",n:"Bantam"},{e:"🦇",n:"Nocturne"},{e:"🪁",n:"Kite"},{e:"🌬️",n:"Gale"}
+];
+
+const W4_ASKS = [
+  "Down for twenty minutes. Something {w}.",
+  "Something {w} before I go back up.",
+  "Been circling for an hour. Make it {w}.",
+  "{w}, and keep the coffee coming.",
+  "Weather's closing in. Something {w}.",
+  "Give me {w} — I've a long leg ahead.",
+  "They talk about your {w} all down the coast.",
+  "Anything, so long as it's {w}.",
+  "One plate, {w}, and I'm gone.",
+  "Flew a thousand miles for something {w}."
+];
+
+const W4_UPGRADES = [
+  {id:"crate",ic:"📦",t:"New ingredients",max:8,costs:[170,400,740,1250,2000,3000,4300,6000],
+   d:()=>crateBlurb()},
+  {id:"bowl",ic:"🍽️",t:"Bigger plate",max:3,costs:[240,680,1750],
+   d:()=>"Combine more at once. Now " + bowlSize() + " slots."},
+  {id:"calm",ic:"🔥",t:"Warm hangar",max:5,costs:[150,280,470,760,1180],
+   d:()=>"Crews linger longer before the tower calls them back."},
+  {id:"apron",ic:"🧥",t:"Flight jacket",max:5,costs:[250,440,750,1230,1880],
+   d:()=>"Better tips on every plate. Currently +" + Math.round((tipMult()-1)*100) + "%."},
+  {id:"bulk",ic:"⚖️",t:"Freight allowance",max:5,costs:[190,400,700,1150,1750],
+   d:()=>"Every unit in the hold costs less. " + (S.up.bulk
+     ? "You're paying " + (S.up.bulk*8) + "% under list; next level makes it " + ((S.up.bulk+1)*8) + "%."
+     : "No discount yet; the first level takes 8% off.")},
+  {id:"delivery",ic:"🪂",t:"Airdrop",max:4,costs:[340,730,1280,2000],
+   d:()=>"Free units parachuted in each morning, on top of what you ordered. " + (S.up.delivery
+     ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "."
+     : "No airdrop yet; the first level brings 3 a day.")},
+  {id:"thrift",ic:"🔪",t:"Steady hands",max:4,costs:[280,580,1050,1700],
+   d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
+  {id:"board",ic:"📻",t:"Radio tower",max:2,costs:[400,950],
+   d:()=>"The tower radios ahead with who's on final approach."},
+  {id:"surge",ic:"🪶",t:"Signature garnish",max:4,costs:[260,540,970,1620],
+   d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
+  {id:"cool",ic:"🗺️",t:"Flight briefing",max:4,costs:[350,720,1260,2000],
+   d:()=>"A flavour they asked you to skip stings less. Currently keeping " +
+     Math.round(avoidFactor()*100) + "% of the pay instead of 35%."}
+];
+
+/* ============================ WORLDS ============================ */
+
+
+
+const WORLDS = [
+  {
+    name:"The Deep End", sign:'The Deep <em>End</em>', currency:"shells",
+    blurb:"An all-night diner at the bottom of the sea.",
+    ingredients:W1_ING, recipes:W1_RECIPES, tiers:W1_TIERS, forms:W1_FORMS,
+    customers:W1_CUSTOMERS, asks:W1_ASKS, upgrades:W1_UPGRADES,
+    mult:1, ascendCost:1000000,
+    theme:{ink:"#04191F",deep:"#062430",deep2:"#0A2E3A",pan1:"#072834",pan2:"#0A3644",
+      panglow:"#17607055",glow:"#7FE3D4",lantern:"#F2C14E",anemone:"#E8657C",sand:"#EFDCB8"}
+  },
+  {
+    name:"The Long Road", sign:'The Long <em>Road</em>', currency:"coins",
+    blurb:"A cook-fire at the last waystation before the pass.",
+    ingredients:W2_ING, recipes:W2_RECIPES, tiers:W2_TIERS, forms:W2_FORMS,
+    customers:W2_CUSTOMERS, asks:W2_ASKS, upgrades:W2_UPGRADES,
+    mult:1.5, ascendCost:3000000,
+    theme:{ink:"#1A0E14",deep:"#2A1620",deep2:"#38202A",pan1:"#2E161C",pan2:"#4A2620",
+      panglow:"#8A3B2E55",glow:"#E8A87C",lantern:"#F0D264",anemone:"#6FA8C7",sand:"#F5E7D3"}
+  },
+  {
+    name:"The Last Light", sign:'The Last <em>Light</em>', currency:"credits",
+    blurb:"The only galley still open on a relay station at the edge of the map.",
+    ingredients:W3_ING, recipes:W3_RECIPES, tiers:W3_TIERS, forms:W3_FORMS,
+    customers:W3_CUSTOMERS, asks:W3_ASKS, upgrades:W3_UPGRADES,
+    mult:2, ascendCost:5000000,
+    theme:{ink:"#0A0918",deep:"#141230",deep2:"#1D1A3E",pan1:"#131130",pan2:"#241F52",
+      panglow:"#5B3FA855",glow:"#C2A0FF",lantern:"#6FE3B0",anemone:"#FF7A9C",sand:"#EAE6F7"}
+  },
+  {
+    name:"The Crosswind", sign:'The <em>Crosswind</em>', currency:"wings",
+    blurb:"A kitchen on a clifftop airstrip where the pilots and the migrations both stop.",
+    ingredients:W4_ING, recipes:W4_RECIPES, tiers:W4_TIERS, forms:W4_FORMS,
+    customers:W4_CUSTOMERS, asks:W4_ASKS, upgrades:W4_UPGRADES,
+    mult:2.5, ascendCost:null,
+    theme:{ink:"#0E1A2B",deep:"#16273D",deep2:"#1E3350",pan1:"#122234",pan2:"#28486B",
+      panglow:"#FF9E4F44",glow:"#8CC6FF",lantern:"#FF9E4F",anemone:"#E05E7B",sand:"#EAF1FA"}
+  }
+];
+
+let WORLD, INGREDIENTS, ING, MAX_TIER, TIER_NAMES, RECIPES, RECIPE_TOTAL,
+    FORMS, CUSTOMERS, ASKS, UPGRADES;
+
+function loadWorld(level){
+  WORLD = WORLDS[Math.min(Math.max(level,1), WORLDS.length) - 1];
+  INGREDIENTS = WORLD.ingredients;
+  ING = Object.fromEntries(INGREDIENTS.map(i => [i.id, i]));
+  MAX_TIER = Math.max(...INGREDIENTS.map(i => i.tier));
+  TIER_NAMES = WORLD.tiers;
+  FORMS = WORLD.forms;
+  CUSTOMERS = WORLD.customers;
+  ASKS = WORLD.asks;
+  UPGRADES = WORLD.upgrades;
+  RECIPES = {};
+  WORLD.recipes.forEach(([ids,name,add]) => {
+    RECIPES[[...ids].sort().join("|")] = {name, add, ids:[...ids].sort()};
+  });
+  RECIPE_TOTAL = Object.keys(RECIPES).length;
+  applyTheme();
+}
+
+function applyTheme(){
+  const r = document.documentElement;
+  Object.entries(WORLD.theme).forEach(([k,v]) => r.style.setProperty("--" + k, v));
+  const sign = document.querySelector(".sign");
+  if(sign) sign.innerHTML = WORLD.sign;
+  document.title = WORLD.name + " — a kitchen";
+  const cl = document.getElementById("curLabel");
+  if(cl) cl.textContent = WORLD.currency;
+}
+const CUR = () => WORLD.currency;
+
+/* ============================ STATE ============================ */
+
+
+const ascendCost = () => (WORLD && WORLD.ascendCost) || Infinity;
+
+const S = {
+  level:1, shells:150, day:1, served:0, dayServed:0, streak:0,
+  stock:{}, prices:{}, prevPrices:{}, phase:"morning",
+  pendingStock:{}, pendingUp:{}, arrived:[], bowl:[], plate:null, customer:null, onDeck:null,
+  found:new Set(), made:new Map(), timerOn:true,
+  up:{}, lastT:0
+};
+
+function resetForWorld(seed){
+  S.shells = seed;
+  S.day = 1; S.served = 0; S.dayServed = 0; S.streak = 0;
+  S.stock = {}; S.pendingStock = {}; S.pendingUp = {}; S.arrived = [];
+  S.bowl = []; S.plate = null; S.customer = null; S.onDeck = null;
+  S.found = new Set(); S.made = new Map();
+  S.up = {};
+  UPGRADES.forEach(u => S.up[u.id] = 0);
+  INGREDIENTS.forEach(i => S.stock[i.id] = i.tier === 0 ? 8 : 0);
+  rollPrices();
+}
+
+const SAVE_KEY = "deepEnd.save.v5";
+let saveOK = true;
+
+function saveGame(){
+  if(!saveOK) return;
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({
+      v:5, level:S.level, shells:S.shells, day:S.day, served:S.served, dayServed:S.dayServed,
+      streak:S.streak, stock:S.stock, prices:S.prices, prevPrices:S.prevPrices,
+      phase:S.phase, pendingStock:S.pendingStock, pendingUp:S.pendingUp,
+      arrived:S.arrived, timerOn:S.timerOn, up:S.up,
+      found:[...S.found], made:[...S.made],
+      bowl:S.bowl.map(i => i.id), plate:S.plate,
+      customer:S.customer, onDeck:S.onDeck
+    }));
+  }catch(e){
+    saveOK = false;
+    note("This browser won't let the game save. Download the file and open it directly and progress will stick.", "bad");
+  }
+}
+
+function loadGame(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(!raw) return false;
+    const d = JSON.parse(raw);
+    if(!d || d.v !== 5) return false;
+    S.level = d.level || 1;
+    loadWorld(S.level);
+    ["shells","day","served","dayServed","streak","phase","timerOn","arrived",
+     "stock","prices","prevPrices","pendingStock","pendingUp","up","plate","customer","onDeck"]
+      .forEach(k => { if(d[k] !== undefined) S[k] = d[k]; });
+    S.found = new Set(d.found || []);
+    S.made  = new Map(d.made || []);
+    S.bowl  = (d.bowl || []).map(id => ING[id]).filter(Boolean);
+    INGREDIENTS.forEach(i => { if(typeof S.stock[i.id] !== "number") S.stock[i.id] = 0; });
+    UPGRADES.forEach(u => { if(typeof S.up[u.id] !== "number") S.up[u.id] = 0; });
+    return true;
+  }catch(e){ return false; }
+}
+
+function wipeSave(){
+  try{ localStorage.removeItem(SAVE_KEY); }catch(e){}
+  location.reload();
+}
+
+const el = id => document.getElementById(id);
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+const bowlSize = () => 3 + S.up.bowl;
+const tipMult  = () => 1 + S.up.apron * 0.22;
+const maxTier  = () => Math.min(S.up.crate, MAX_TIER);
+const dayMult  = () => 1 + (S.day - 1) * 0.09;
+const levelMult  = () => (WORLD && WORLD.mult) || 1;
+const avoidFactor = () => Math.min(0.85, 0.35 + (S.up.cool || 0) * 0.10);
+const pool     = () => INGREDIENTS.filter(i => i.tier <= maxTier());
+const perDay   = () => 5 + Math.floor((S.day - 1) / 3);
+const price    = ing => Math.max(2, Math.round((S.prices[ing.id] || 12) * (1 - S.up.bulk*0.08)));
+function rollPrices(){
+  S.prevPrices = Object.assign({}, S.prices);
+  INGREDIENTS.forEach(i => { S.prices[i.id] = 5 + Math.floor(Math.random()*26); });
+}
+const totalStock = () => Object.values(S.stock).reduce((a,b)=>a+b,0);
+
+function patienceFor(vip){
+  return Math.max(11, 32 - (S.day-1)*1.4) * (1 + S.up.calm*0.16) * (vip ? 0.7 : 1);
+}
+function wantsCount(){
+  if(S.day >= 14) return 4;
+  if(S.day >= 8)  return 3;
+  if(S.day >= 3)  return 2;
+  return 1;
+}
+const upLevel  = id => S.up[id] + (S.pendingUp[id] || 0);
+const onOrder  = id => S.pendingStock[id] || 0;
+
+function hash(s){ let h = 0; for(let i=0;i<s.length;i++) h = (h*31 + s.charCodeAt(i)) >>> 0; return h; }
+
+/* ============================ PANTRY ============================ */
+
+function takeFromPantry(ing){
+  if(S.plate){ note("Serve or bin the plate first."); return; }
+  if(S.bowl.length >= bowlSize()){ note("The bowl is full — combine what you've got."); return; }
+  if(S.stock[ing.id] <= 0){ note("No " + ing.n.toLowerCase() + " left. Restock at the supply crate."); return; }
+  S.stock[ing.id]--;
+  S.bowl.push(ing);
+  drawPantry(); drawBowl();
+}
+
+function drawPantry(){
+  const grid = el("pantryGrid");
+  grid.innerHTML = "";
+  const list = pool();
+  list.forEach(ing => {
+    const have = S.stock[ing.id];
+    const b = document.createElement("button");
+    b.className = "pIng" + (have <= 0 ? " out" : "");
+    b.disabled = have <= 0;
+    b.innerHTML =
+      '<span class="pE" aria-hidden="true">' + ing.e + '</span>' +
+      '<span class="pN">' + ing.n + '</span>' +
+      '<span class="pT">' + ing.tags.map(t=>TAG_WORDS[t]).join(" · ") + '</span>' +
+      '<span class="pC">' + have + '</span>';
+    b.setAttribute("aria-label", ing.n + ", " + have + " in stock");
+    b.addEventListener("click", () => takeFromPantry(ing));
+    grid.appendChild(b);
+  });
+  el("pantrySub").textContent = list.length + " ingredients stocked · " + totalStock() +
+    " units on the shelf";
+  const emp = el("pantryEmpty");
+  if(totalStock() === 0){
+    emp.hidden = false;
+    emp.textContent = "Every shelf is bare. Open the supply crate and buy stock — you can't cook without it.";
+  } else emp.hidden = true;
+}
+
+/* ============================ COOKING ============================ */
+
+function combine(){
+  if(S.bowl.length < 1 || S.plate) return;
+  const ids = S.bowl.map(i=>i.id).sort();
+  const key = ids.join("|");
+  const known = RECIPES[key];
+
+  const tags = new Set();
+  S.bowl.forEach(i => i.tags.forEach(t => tags.add(t)));
+  if(known) known.add.forEach(t => tags.add(t));
+
+  let name, isNew = false;
+  if(known){
+    name = known.name;
+    if(!S.found.has(key)){ S.found.add(key); isNew = true; }
+  } else if(S.bowl.length === 1){
+    name = S.bowl[0].n + ", plain";
+  } else {
+    const form = FORMS.find(f => tags.has(f.tag)) || FORMS[FORMS.length-1];
+    const names = S.bowl.map(i => i.n);
+    const head = names.length === 2 ? names.join(" & ")
+      : names.slice(0,-1).join(", ") + " & " + names[names.length-1];
+    name = head + " " + form.words[hash(key) % form.words.length];
+  }
+  let bounty = 0;
+  if(isNew){
+    const top = Math.max(...ids.map(id => ING[id].tier));
+    bounty = Math.round((25 + top*15 + (ids.length - 2)*20) * levelMult());
+    S.shells += bounty;
+  } else if(!known && !S.made.has(key)){
+    bounty = Math.round((6 + Math.max(...ids.map(id => ING[id].tier))*2) * levelMult());
+    S.shells += bounty;
+  }
+  if(!S.made.has(key)){
+    S.made.set(key, {name, ids, known:!!known});
+    if(!known) note("Improvised: " + name + ". Logged in the book. +" + bounty, "good");
+  }
+
+  // careful hands can hand one ingredient back
+  if(S.up.thrift && S.bowl.length > 1 && Math.random() < S.up.thrift*0.09){
+    const back = pick(S.bowl);
+    S.stock[back.id]++;
+    note("Careful hands — the " + back.n.toLowerCase() + " went back on the shelf.");
+  }
+
+  S.plate = {name, tags:[...tags], known:!!known, isNew, parts:S.bowl.length};
+  S.bowl = [];
+  if(isNew) note("New recipe found: " + name + ". The book pays " + bounty + " " + CUR() + ".", "good");
+  drawPantry(); drawBowl(); drawPlate(); paint();
+}
+
+function scorePlate(){
+  const c = S.customer, p = S.plate;
+  const hits = c.wants.filter(t => p.tags.includes(t));
+  const bads = c.avoid.filter(t => p.tags.includes(t));
+  const full = hits.length === c.wants.length;
+
+  let pay = hits.length * 18;
+  if(full) pay += 24;
+  if(p.known) pay += 18;
+  if(S.timerOn) pay += Math.round(Math.max(0, c.left / c.total) * 16);
+  pay += (S.up.surge || 0) * 10;
+
+  let demandOk = true;
+  if(c.demand === "known" && !p.known) demandOk = false;
+  if(c.demand === "big"   && p.parts < 3) demandOk = false;
+  if(c.demand === "solo"  && p.parts !== 1) demandOk = false;
+  if(c.demand) pay = demandOk ? pay + 28 : Math.round(pay * 0.4);
+
+  bads.forEach(() => { pay = Math.round(pay * avoidFactor()); });
+  if(hits.length === 0) pay = Math.min(pay, 6);
+
+  const portion = 1 + (p.parts - 1) * 0.3;
+  if(c.vip) pay *= 2;
+  pay = Math.max(1, Math.round(pay * portion * dayMult() * tipMult() * levelMult() * (1 + Math.min(S.streak,6)*0.08)));
+  return {pay, hits, bads, full, demandOk, portion};
+}
+
+function floatPay(txt){
+  const n = document.createElement("div");
+  n.className = "floatText";
+  n.textContent = txt;
+  const r = el("pantry").getBoundingClientRect();
+  n.style.left = (r.left + r.width/2) + "px";
+  n.style.top  = (r.top + r.height*0.35) + "px";
+  document.body.appendChild(n);
+  setTimeout(()=>n.remove(), 1400);
+}
+
+function serve(){
+  if(!S.plate || !S.customer) return;
+  const r = scorePlate();
+  const c = S.customer, dish = S.plate.name;
+  S.shells += r.pay;
+  S.served++; S.dayServed++;
+
+  if(r.full && !r.bads.length && r.demandOk){
+    S.streak++;
+    note(c.name + ' clears the plate. "' + dish + ' — exactly right." +' + r.pay, "good");
+  } else if(r.bads.length){
+    S.streak = 0;
+    note(c.name + ' picks around it. "I said nothing ' + r.bads[0] + '." +' + r.pay, "bad");
+  } else if(!r.demandOk){
+    S.streak = 0;
+    note(c.name + " sighs. That isn't what they asked for. +" + r.pay, "bad");
+  } else if(r.hits.length){
+    S.streak = 0;
+    note(c.name + " eats most of it. Close, not quite. +" + r.pay);
+  } else {
+    S.streak = 0;
+    note(c.name + " stares at the " + dish.toLowerCase() + ", then at you. +" + r.pay, "bad");
+  }
+  floatPay("+" + r.pay);
+  S.plate = null;
+  drawPlate();
+  advanceCustomer();
+}
+
+function walkOut(){
+  const c = S.customer;
+  S.customer = null; S.streak = 0; S.dayServed++;
+  note(c.name + " waited long enough and left.", "bad");
+  advanceCustomer();
+}
+
+function waveOff(){
+  if(!S.customer) return;
+  const c = S.customer;
+  S.streak = 0; S.dayServed++;
+  note("You wave " + c.name + " off. No hard feelings.");
+  advanceCustomer();
+}
+
+/* ============================ CUSTOMERS ============================ */
+
+function availableTags(){
+  const t = new Set();
+  const unlocked = new Set(pool().map(i => i.id));
+  pool().forEach(i => i.tags.forEach(x => t.add(x)));
+  Object.values(RECIPES).forEach(r => {
+    if(r.ids.every(id => unlocked.has(id))) r.add.forEach(x => t.add(x));
+  });
+  return [...t];
+}
+
+function makeCustomer(){
+  const person = pick(CUSTOMERS);
+  const tags = availableTags();
+  const wants = [];
+  while(wants.length < Math.min(wantsCount(), tags.length)){
+    const t = pick(tags);
+    if(!wants.includes(t)) wants.push(t);
+  }
+  const rest = tags.filter(t => !wants.includes(t));
+  const avoid = [];
+  if(S.day >= 4 && rest.length && Math.random() < 0.55) avoid.push(pick(rest));
+  if(S.day >= 11 && rest.length > 1 && Math.random() < 0.35){
+    const second = pick(rest.filter(t => !avoid.includes(t)));
+    if(second) avoid.push(second);
+  }
+  let demand = null;
+  if(S.day >= 6 && Math.random() < 0.28) demand = pick(["known","big","solo"]);
+  const vip = S.day >= 9 && Math.random() < 0.15;
+  const total = patienceFor(vip);
+  return {name:person.n, face:person.e, wants, avoid, demand, vip, total, left:total, ask:pick(ASKS)};
+}
+
+function newDay(){
+  S.day++; S.dayServed = 0;
+  rollPrices();
+  S.arrived = receiveOrder();
+  let msg = "Day " + S.day + ". The supplier posts new prices.";
+  if(S.arrived.length) msg += " The truck brings: " + S.arrived.join(", ") + ".";
+  if(S.up.delivery){
+    const units = S.up.delivery * 3;
+    const list = pool();
+    const got = {};
+    for(let i = 0; i < units; i++){
+      const ing = pick(list);
+      S.stock[ing.id]++;
+      got[ing.n] = (got[ing.n]||0) + 1;
+    }
+    const summary = Object.entries(got).map(([k,v]) => k + " ×" + v).join(", ");
+    msg += " Standing delivery: " + summary + ".";
+    S.arrived.push("standing delivery — " + summary);
+  }
+  note(msg + " Word's getting around.", "day");
+  rescueIfStuck();
+  drawPantry();
+  openMorning();
+}
+
+function rescueIfStuck(){
+  const cheapest = Math.min(...pool().map(price));
+  if(totalStock() === 0 && S.shells < cheapest){
+    INGREDIENTS.filter(i => i.tier === 0).forEach(i => S.stock[i.id] += 4);
+    note("The supplier takes pity and drops off a starter crate.", "good");
+  }
+}
+
+function advanceCustomer(){
+  if(S.dayServed >= perDay()) newDay();
+  S.customer = S.onDeck || makeCustomer();
+  S.customer.left = S.customer.total;
+  S.onDeck = makeCustomer();
+  rescueIfStuck();
+  drawCustomer(); drawPantry(); paint();
+}
+
+/* ============================ RENDER ============================ */
+
+function drawCustomer(){
+  const c = S.customer;
+  if(!c) return;
+  el("cFace").textContent = c.face;
+  el("cFace").classList.toggle("vip", !!c.vip);
+  el("cName").innerHTML = c.name + (c.vip ? '<span class="badge">pays double</span>' : "");
+  let txt = c.ask.replace("{w}", c.wants.map(w => "<b>" + TAG_WORDS[w] + "</b>").join(" and "));
+  if(c.avoid.length) txt += " <i>Nothing " + c.avoid.map(a => TAG_WORDS[a]).join(" or ") + ".</i>";
+  if(c.demand) txt += " <u>" + DEMAND_TEXT[c.demand] + "</u>";
+  el("cOrder").innerHTML = txt;
+  el("cPatience").hidden = !S.timerOn;
+  el("cNoRush").hidden = S.timerOn;
+  const peek = el("cPeek");
+  if(S.up.board && S.onDeck){
+    const n = S.onDeck;
+    let p = "Next in: " + n.name + " — wants <b>" + n.wants.map(w => TAG_WORDS[w]).join(", ") + "</b>";
+    if(S.up.board >= 2 && n.avoid.length) p += ", no " + n.avoid.map(a => TAG_WORDS[a]).join(" or ");
+    peek.innerHTML = p + ".";
+    peek.hidden = false;
+  } else peek.hidden = true;
+}
+
+function drawBowl(){
+  const wrap = el("slots");
+  wrap.innerHTML = "";
+  for(let i = 0; i < bowlSize(); i++){
+    const ing = S.bowl[i];
+    const s = document.createElement("div");
+    s.className = "slot" + (ing ? " full" : "");
+    if(ing){
+      s.innerHTML = '<span aria-hidden="true">' + ing.e + '</span><span class="tip">' + ing.n + '</span>';
+      s.title = "Put " + ing.n + " back on the shelf";
+      s.addEventListener("click", () => {
+        const back = S.bowl.splice(i,1)[0];
+        S.stock[back.id]++;
+        drawPantry(); drawBowl();
+      });
+    }
+    wrap.appendChild(s);
+  }
+  el("bowlHint").textContent = S.bowl.length + " / " + bowlSize();
+  el("combineBtn").disabled = S.bowl.length < 1 || !!S.plate;
+  el("clearBtn").disabled = S.bowl.length === 0;
+}
+
+function drawPlate(){
+  const box = el("plate");
+  if(!S.plate){ box.classList.remove("on"); drawBowl(); return; }
+  box.classList.add("on");
+  el("dishName").textContent = S.plate.name;
+  const c = S.customer;
+  el("dishTags").innerHTML = S.plate.tags.map(t => {
+    let cls = "tag";
+    if(c && c.wants.includes(t)) cls += " hit";
+    else if(c && c.avoid.includes(t)) cls += " bad";
+    return '<span class="' + cls + '">' + TAG_WORDS[t] + '</span>';
+  }).join("");
+  const k = el("dishKnown");
+  k.className = "known" + (S.plate.isNew ? " fresh" : "");
+  k.textContent = S.plate.isNew ? "New to the book."
+                : S.plate.known ? "A recipe the regulars know." : "Improvised.";
+  drawBowl();
+}
+
+function note(text, cls){
+  const log = el("log");
+  const p = document.createElement("p");
+  if(cls) p.className = cls;
+  p.textContent = text;
+  log.appendChild(p);
+  while(log.children.length > 60) log.firstChild.remove();
+  log.scrollTop = log.scrollHeight;
+}
+
+function paint(){
+  el("shellCount").textContent = S.shells;
+  el("dayCount").textContent = S.day;
+  el("levelCount").textContent = S.level;
+  el("servedCount").textContent = S.served;
+  el("streakCount").textContent = S.streak;
+  el("btnUp").classList.toggle("nudge", S.phase === "morning" &&
+    UPGRADES.some(u => upLevel(u.id) < u.max && S.shells >= u.costs[upLevel(u.id)]));
+  el("btnStock").classList.toggle("nudge", S.phase === "morning" && totalStock() < 6);
+  el("walletShells").textContent = S.shells.toLocaleString() + " " + CUR();
+  if(el("modal").classList.contains("on")){ drawMarket(); drawUpgrades(); drawBook(); }
+}
+
+function crateBlurb(){
+  const next = INGREDIENTS.filter(i => i.tier === Math.min(upLevel("crate"), MAX_TIER) + 1).map(i => i.n);
+  return next.length ? "Unlocks " + next.join(", ") + " for the truck to carry." : "Every ingredient is unlocked.";
+}
+
+/* ---------- market ---------- */
+
+function buy(ing, qty){
+  const cost = price(ing) * qty;
+  if(S.shells < cost) return;
+  S.shells -= cost;
+  S.pendingStock[ing.id] = onOrder(ing.id) + qty;
+  paint();
+}
+
+function receiveOrder(){
+  const parts = [];
+  Object.entries(S.pendingStock).forEach(([id,q]) => {
+    if(q > 0){ S.stock[id] += q; parts.push(ING[id].n + " ×" + q); }
+  });
+  Object.entries(S.pendingUp).forEach(([id,n]) => {
+    if(n > 0){
+      S.up[id] += n;
+      const u = UPGRADES.find(x => x.id === id);
+      parts.push(u.t + (n > 1 ? " +" + n + " levels" : " installed"));
+    }
+  });
+  S.pendingStock = {}; S.pendingUp = {};
+  return parts;
+}
+
+function moveTag(ing){
+  const raw = S.prevPrices[ing.id];
+  if(raw === undefined) return "";
+  const prev = Math.max(2, Math.round(raw * (1 - S.up.bulk*0.08)));
+  const now = price(ing);
+  if(now > prev) return '<span class="mv up">▲ up from ' + prev + '</span>';
+  if(now < prev) return '<span class="mv dn">▼ down from ' + prev + '</span>';
+  return '<span class="mv">— same as yesterday</span>';
+}
+
+function drawMarket(){
+  el("stockNote").textContent =
+    "You order today, the truck delivers tomorrow morning — so buy for the day after this one. " +
+    "Prices are reset every morning, anywhere from 5 to 30 a unit." +
+    (S.up.bulk ? " Bulk buying is saving you a further " + (S.up.bulk*8) + "%." : "");
+
+  const bar = el("bulkBar");
+  bar.innerHTML = "";
+  [3,5].forEach(q => {
+    const list = pool();
+    const cost = list.reduce((a,i) => a + price(i)*q, 0);
+    const b = document.createElement("button");
+    b.className = "buy";
+    b.textContent = "×" + q + " of everything — " + cost.toLocaleString() + " " + CUR();
+    b.disabled = S.shells < cost;
+    b.addEventListener("click", () => {
+      if(S.shells < cost) return;
+      S.shells -= cost;
+      list.forEach(i => S.pendingStock[i.id] = onOrder(i.id) + q);
+      note("Ordered ×" + q + " of everything. It lands tomorrow morning.", "good");
+      drawMarket(); paint();
+    });
+    bar.appendChild(b);
+  });
+
+  const wrap = el("market");
+  wrap.innerHTML = "";
+  for(let t = 0; t <= maxTier(); t++){
+    const head = document.createElement("div");
+    head.className = "groupHead";
+    head.innerHTML = "<span>" + TIER_NAMES[t] + "</span><span class='g2'>set " + t + "</span>";
+    wrap.appendChild(head);
+    INGREDIENTS.filter(i => i.tier === t).forEach(ing => {
+      const p = price(ing);
+      const row = document.createElement("div");
+      row.className = "mRow";
+      row.innerHTML =
+        '<div class="ic" aria-hidden="true">' + ing.e + '</div>' +
+        '<div class="txt"><div class="t">' + ing.n + '</div>' +
+        '<div class="d">' + ing.tags.map(x=>TAG_WORDS[x]).join(" · ") + ' — ' + p + ' ' + CUR() + ' each' +
+        (S.up.bulk ? '<span class="mv dn"> (list ' + S.prices[ing.id] + ', bulk −' + (S.up.bulk*8) + '%)</span>' : '') +
+        moveTag(ing) +
+        (onOrder(ing.id) ? '<span class="onOrder"> · ' + onOrder(ing.id) + ' on the truck</span>' : '') +
+        '</div></div>' +
+        '<div class="have">' + S.stock[ing.id] + '</div>';
+      [1,10].forEach(q => {
+        const b = document.createElement("button");
+        b.className = "buy";
+        b.textContent = "+" + q;
+        b.disabled = S.shells < p*q;
+        b.addEventListener("click", () => { buy(ing, q); drawMarket(); });
+        row.appendChild(b);
+      });
+      wrap.appendChild(row);
+    });
+  }
+  if(maxTier() < MAX_TIER){
+    const n = document.createElement("div");
+    n.className = "note";
+    n.style.marginTop = ".9rem";
+    n.textContent = "More ingredients unlock through Upgrades → New ingredients.";
+    wrap.appendChild(n);
+  }
+}
+
+/* ---------- upgrades ---------- */
+
+function drawUpgrades(){
+  const wrap = el("upgrades");
+  wrap.innerHTML = "";
+  UPGRADES.forEach(u => {
+    const lv = upLevel(u.id), pend = S.pendingUp[u.id] || 0;
+    const maxed = lv >= u.max, cost = maxed ? 0 : u.costs[lv];
+    const row = document.createElement("div");
+    row.className = "mRow";
+    row.innerHTML =
+      '<div class="ic" aria-hidden="true">' + u.ic + '</div>' +
+      '<div class="txt"><div class="t">' + u.t + '</div>' +
+      '<div class="d">' + u.d() + '</div>' +
+      '<div class="d" style="color:var(--lantern);opacity:.85">' +
+        (maxed ? "Fully upgraded" : "Level " + S.up[u.id] + " of " + u.max) +
+        (pend ? ' · ' + pend + ' on the truck' : '') + '</div></div>';
+    const b = document.createElement("button");
+    b.className = "buy";
+    b.textContent = maxed ? "—" : cost.toLocaleString() + " " + CUR();
+    b.disabled = maxed || S.shells < cost;
+    b.addEventListener("click", () => {
+      if(S.shells < cost) return;
+      S.shells -= cost;
+      S.pendingUp[u.id] = (S.pendingUp[u.id] || 0) + 1;
+      note(u.t + " ordered. It's fitted tomorrow morning.", "good");
+      drawMarket(); drawUpgrades(); paint();
+    });
+    row.appendChild(b);
+    wrap.appendChild(row);
+  });
+}
+
+/* ---------- recipe book ---------- */
+
+function drawBook(){
+  const unlocked = new Set(pool().map(i => i.id));
+  const improvised = [...S.made.entries()].filter(([k,v]) => !v.known);
+
+  el("bookNote").textContent =
+    S.found.size + " of " + RECIPE_TOTAL + " signature recipes found · " +
+    improvised.length + " improvised plates logged · " + S.made.size +
+    " combinations made in total. Every first-time discovery pays shells.";
+
+  const wrap = el("book");
+  wrap.innerHTML = "";
+
+  const sizes = [...new Set(Object.values(RECIPES).map(r => r.ids.length))].sort();
+  sizes.forEach(sz => {
+    for(let t = 0; t <= MAX_TIER; t++){
+      const entries = Object.entries(RECIPES).filter(([k,r]) =>
+        r.ids.length === sz && Math.max(...r.ids.map(id => ING[id].tier)) === t);
+      if(!entries.length) continue;
+      const found = entries.filter(([k]) => S.found.has(k)).length;
+      const rows = entries.map(([k,r]) => {
+        const got = S.found.has(k);
+        const canSee = r.ids.every(id => unlocked.has(id));
+        const ings = r.ids.map(id => ING[id].e + " " + ING[id].n).join(" + ");
+        if(got)    return '<div class="rec"><span class="rn">' + r.name + '</span><span class="ri">' + ings + '</span></div>';
+        if(canSee) return '<div class="rec locked"><span class="rn">not yet found</span><span class="ri">' + ings + '</span></div>';
+        return '<div class="rec locked"><span class="rn">not yet found</span><span class="ri">ingredients not unlocked</span></div>';
+      }).join("");
+      const div = document.createElement("div");
+      div.innerHTML = '<div class="groupHead"><span>' + sz + '-ingredient · ' + TIER_NAMES[t] +
+        '</span><span class="g2">' + found + '/' + entries.length + '</span></div>' + rows;
+      wrap.appendChild(div);
+    }
+  });
+
+  const div = document.createElement("div");
+  let rows;
+  if(improvised.length){
+    rows = improvised
+      .sort((a,b) => a[1].ids.length - b[1].ids.length || a[1].name.localeCompare(b[1].name))
+      .map(([k,v]) => '<div class="rec improv"><span class="rn">' + v.name + '</span><span class="ri">' +
+        v.ids.map(id => ING[id].e + " " + ING[id].n).join(" + ") + '</span></div>').join("");
+  } else {
+    rows = '<div class="rec locked"><span class="rn">nothing yet</span>' +
+      '<span class="ri">any combination that isn\'t a signature recipe gets logged here</span></div>';
+  }
+  div.innerHTML = '<div class="groupHead"><span>Improvised plates</span><span class="g2">' +
+    improvised.length + ' logged</span></div>' + rows;
+  wrap.appendChild(div);
+}
+
+/* ============================ MODAL / WIRING ============================ */
+
+const PANES = {stock:["tabStock","paneStock"], up:["tabUp","paneUp"], book:["tabBook","paneBook"]};
+
+function ascendState(){
+  const ups  = UPGRADES.filter(u => S.up[u.id] >= u.max).length;
+  const recs = S.found.size;
+  const done = ups === UPGRADES.length && recs >= RECIPE_TOTAL && S.shells >= ascendCost();
+  return {ups, upsTotal:UPGRADES.length, recs, recsTotal:RECIPE_TOTAL,
+          hasNext:S.level < WORLDS.length, ready:done};
+}
+
+function ascend(){
+  const next = WORLDS[S.level];
+  if(!next) return;
+  S.level++;
+  loadWorld(S.level);
+  resetForWorld(150);
+  S.onDeck = makeCustomer();
+  S.customer = makeCustomer();
+  note("You sign the lease and walk away from the counter for the last time.", "day");
+  note("Level " + S.level + ": " + WORLD.name + ". " + WORLD.blurb +
+       " Everything starts over — but every plate is worth " +
+       levelMult() + "× what a level 1 plate was worth.", "good");
+  drawCustomer(); drawPantry(); drawBowl(); drawPlate(); paint();
+  openMorning();
+}
+
+function ascendPanel(){
+  const a = ascendState();
+  if(!a.hasNext){
+    return '<p>You are running the last kitchen there is. Nothing left to buy your way into.</p>';
+  }
+  const row = (ok, txt) => '<p style="opacity:' + (ok ? 1 : .7) + '">' +
+    (ok ? '✓ ' : '· ') + txt + '</p>';
+  let html = '<p style="margin-top:.5rem;color:var(--lantern);font-weight:600">' +
+    'The lease on ' + WORLDS[S.level].name + '</p>' +
+    row(a.ups === a.upsTotal, "Every upgrade maxed — " + a.ups + " of " + a.upsTotal) +
+    row(a.recs >= a.recsTotal, "Every set recipe found — " + a.recs + " of " + a.recsTotal) +
+    row(S.shells >= ascendCost(), ascendCost().toLocaleString() + " " + CUR() +
+        " saved — " + S.shells.toLocaleString() + " so far");
+  if(a.ready){
+    html += '<p><button class="linkBtn" id="ascendBtn" style="font-size:.95rem;font-weight:600">' +
+      'Buy the lease — move up to ' + WORLDS[S.level].name + '</button></p>' +
+      '<p style="opacity:.7">This clears your ' + CUR() + ', stock, upgrades and recipe book, ' +
+      'and starts you again with a new pantry.</p>';
+  }
+  return html;
+}
+
+function setPhaseUI(){
+  const morning = S.phase === "morning";
+  el("btnStock").disabled = !morning;
+  el("btnUp").disabled = !morning;
+  const why = "The truck only takes orders first thing in the morning";
+  el("btnStock").title = morning ? "" : why;
+  el("btnUp").title = morning ? "" : why;
+  el("tabStock").hidden = !morning;
+  el("tabUp").hidden = !morning;
+  el("morningBox").hidden = !morning;
+  el("closeBtn").textContent = morning ? "Open the counter — start day " + S.day : "Back to the counter";
+}
+
+function openMorning(){
+  S.phase = "morning";
+  const box = el("morningBox");
+  box.innerHTML = "<h2>Level " + S.level + " · " + WORLD.name + " · day " + S.day + "</h2>" +
+    (S.arrived.length
+      ? '<p class="arrived">The truck has been: ' + S.arrived.join("; ") + '.</p>'
+      : '<p>Nothing on the truck this morning.</p>') +
+    "<p>Place today's order and it arrives tomorrow — you're always buying a day ahead. " +
+    "Upgrades work the same way. Nothing else can be ordered once the counter opens.</p>" +
+    ascendPanel() +
+    '<p>' + (saveOK ? "Progress saves automatically in this browser. " : "Saving is unavailable in this browser. ") +
+    '<button class="linkBtn" id="resetBtn">Start a new run</button></p>';
+  const ab = el("ascendBtn");
+  if(ab) ab.addEventListener("click", () => {
+    if(confirm("Move up to " + WORLDS[S.level].name + "? This wipes your " + CUR() +
+               ", stock, upgrades and recipe book.")) ascend();
+  });
+  const rb = el("resetBtn");
+  if(rb) rb.addEventListener("click", () => {
+    if(confirm("Wipe the saved game and start over from day 1?")) wipeSave();
+  });
+  setPhaseUI();
+  openModal("stock");
+}
+
+function startDay(){
+  S.phase = "service";
+  el("modal").classList.remove("on");
+  setPhaseUI();
+  paint();
+}
+function showTab(which){
+  if((which === "stock" || which === "up") && S.phase !== "morning") which = "book";
+  el("walletCtx").textContent = which === "stock" ? "Day " + S.day + " prices"
+    : which === "up" ? "Available to spend" : "Discoveries pay into this";
+  Object.entries(PANES).forEach(([k,[tab,pane]]) => {
+    el(tab).classList.toggle("on", k === which);
+    el(pane).hidden = k !== which;
+  });
+}
+function openModal(which){
+  if((which === "stock" || which === "up") && S.phase !== "morning") return;
+  el("walletShells").textContent = S.shells.toLocaleString() + " " + CUR();
+  el("walletCtx").textContent = which === "stock" ? "Day " + S.day + " prices"
+    : which === "up" ? "Available to spend" : "Discoveries pay into this";
+  drawMarket(); drawUpgrades(); drawBook();
+  showTab(which);
+  el("modal").classList.add("on");
+}
+el("btnStock").addEventListener("click", () => openModal("stock"));
+el("btnUp").addEventListener("click", () => openModal("up"));
+el("btnBook").addEventListener("click", () => openModal("book"));
+el("tabStock").addEventListener("click", () => showTab("stock"));
+el("tabUp").addEventListener("click", () => showTab("up"));
+el("tabBook").addEventListener("click", () => { drawBook(); showTab("book"); });
+el("closeBtn").addEventListener("click", () => {
+  if(S.phase === "morning") startDay(); else el("modal").classList.remove("on");
+});
+el("modal").addEventListener("click", e => {
+  if(e.target.id === "modal" && S.phase !== "morning") el("modal").classList.remove("on");
+});
+
+el("combineBtn").addEventListener("click", combine);
+el("clearBtn").addEventListener("click", () => {
+  S.bowl.forEach(i => S.stock[i.id]++);
+  S.bowl = [];
+  drawPantry(); drawBowl();
+});
+el("serveBtn").addEventListener("click", serve);
+el("waveBtn").addEventListener("click", waveOff);
+el("binBtn").addEventListener("click", () => { note("Scraped into the bin."); S.plate = null; drawPlate(); });
+
+el("timerToggle").addEventListener("click", () => {
+  S.timerOn = !S.timerOn;
+  el("timerToggle").setAttribute("aria-checked", String(S.timerOn));
+  if(S.timerOn && S.customer) S.customer.left = S.customer.total;
+  note(S.timerOn ? "Timer on. Guests will leave if you're slow."
+                 : "Timer off. Take as long as you like — no speed bonus either.");
+  drawCustomer();
+});
+
+document.addEventListener("keydown", e => {
+  if(e.key === "Escape" && S.phase !== "morning") el("modal").classList.remove("on");
+  if(el("modal").classList.contains("on")) return;
+  const k = e.key.toLowerCase();
+  if(k === "c" && !el("combineBtn").disabled) combine();
+  if(k === "s" && S.plate) serve();
+});
+
+function tick(t){
+  requestAnimationFrame(tick);
+  if(!S.lastT) S.lastT = t;
+  let dt = (t - S.lastT)/1000;
+  S.lastT = t;
+  if(dt > 0.1) dt = 0.1;
+  if(S.customer && S.timerOn && !el("modal").classList.contains("on")){
+    S.customer.left -= dt;
+    const frac = Math.max(0, S.customer.left / S.customer.total);
+    const bar = el("cPatience");
+    bar.firstElementChild.style.width = (frac*100) + "%";
+    bar.classList.toggle("low", frac < 0.3);
+    if(S.customer.left <= 0) walkOut();
+  }
+}
+
+loadWorld(1);
+resetForWorld(150);
+if(loadGame()){
+  note("Picked up where you left off — day " + S.day + ", " + S.shells + " " + CUR() + " in hand.");
+  if(!S.customer) S.customer = makeCustomer();
+  if(!S.onDeck)   S.onDeck   = makeCustomer();
+  drawCustomer(); drawPantry(); drawBowl(); drawPlate(); setPhaseUI(); paint();
+  if(S.phase === "morning") openMorning();
+} else {
+  note("Opening week at " + WORLD.name + ". " + WORLD.blurb +
+       " The pantry has the basics — everything else comes off the truck.");
+  S.onDeck = makeCustomer();
+  advanceCustomer();
+  drawBowl();
+  openMorning();
+}
+setInterval(saveGame, 4000);
+window.addEventListener("beforeunload", saveGame);
+requestAnimationFrame(tick);
+</script>
+</body>
+</html>
