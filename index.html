@@ -265,7 +265,6 @@ main{display:grid;grid-template-columns:1fr 350px;min-height:0}
             <div class="order" id="cOrder">…</div>
             <div class="patience" id="cPatience"><i style="width:100%"></i></div>
             <div class="noRush" id="cNoRush" hidden>No rush — they'll wait as long as it takes.</div>
-            <div class="peek" id="cPeek" hidden></div>
           </div>
         </div>
         <div class="acts"><button class="btn ghost" id="waveBtn">Wave them off</button></div>
@@ -313,7 +312,7 @@ main{display:grid;grid-template-columns:1fr 350px;min-height:0}
       <div id="market"></div>
     </div>
     <div class="pane" id="paneUp" hidden>
-      <div class="note">Permanent improvements to the kitchen.</div>
+      <div class="note">Permanent improvements, fitted the next morning. You can order one level of each per day.</div>
       <div id="upgrades"></div>
     </div>
     <div class="pane" id="paneBook" hidden>
@@ -516,8 +515,6 @@ const W1_UPGRADES = [
    d:()=>"Free units delivered each morning, on top of what you ordered. " + (S.up.delivery ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "." : "Nothing standing yet; the first level brings 3 a day.")},
   {id:"thrift",ic:"🔪",t:"Careful hands",max:4,costs:[200,420,760,1250],
    d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
-  {id:"board",ic:"📋",t:"Order board",max:2,costs:[300,720],
-   d:()=>"See what the next guest through the door wants."},
   {id:"surge",ic:"🌸",t:"House garnish",max:4,costs:[190,400,720,1200],
    d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
   {id:"cool",ic:"📝",t:"Tasting notes",max:4,costs:[260,540,950,1500],
@@ -707,8 +704,6 @@ const W2_UPGRADES = [
    d:()=>"Free units delivered each morning, on top of what you ordered. " + (S.up.delivery ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "." : "Nothing standing yet; the first level brings 3 a day.")},
   {id:"thrift",ic:"🔪",t:"Steady knife",max:4,costs:[230,480,870,1440],
    d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
-  {id:"board",ic:"🗞️",t:"Runner\'s word",max:2,costs:[340,830],
-   d:()=>"See what the next guest through the door wants."},
   {id:"surge",ic:"✴️",t:"Road spice",max:4,costs:[220,460,830,1380],
    d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
   {id:"cool",ic:"🗣️",t:"Trader\'s tongue",max:4,costs:[300,620,1090,1720],
@@ -898,8 +893,6 @@ const W3_UPGRADES = [
    d:()=>"Free units delivered each morning, on top of what you ordered. " + (S.up.delivery ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "." : "Nothing standing yet; the first level brings 3 a day.")},
   {id:"thrift",ic:"🔪",t:"Precise portions",max:4,costs:[260,550,990,1620],
    d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
-  {id:"board",ic:"📺",t:"Docking screen",max:2,costs:[390,940],
-   d:()=>"See what the next guest through the door wants."},
   {id:"surge",ic:"🧪",t:"Flavour injector",max:4,costs:[250,520,940,1560],
    d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
   {id:"cool",ic:"📡",t:"Palate scanner",max:4,costs:[340,700,1240,1950],
@@ -1089,8 +1082,6 @@ const W4_UPGRADES = [
    d:()=>"Free units delivered each morning, on top of what you ordered. " + (S.up.delivery ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "." : "Nothing standing yet; the first level brings 3 a day.")},
   {id:"thrift",ic:"🔪",t:"Steady hands",max:4,costs:[300,630,1140,1880],
    d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
-  {id:"board",ic:"📻",t:"Radio tower",max:2,costs:[450,1080],
-   d:()=>"See what the next guest through the door wants."},
   {id:"surge",ic:"🪶",t:"Signature garnish",max:4,costs:[280,600,1080,1800],
    d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
   {id:"cool",ic:"🗺️",t:"Flight briefing",max:4,costs:[390,810,1420,2250],
@@ -1280,13 +1271,16 @@ const W5_UPGRADES = [
    d:()=>"Free units delivered each morning, on top of what you ordered. " + (S.up.delivery ? "Currently " + (S.up.delivery*3) + " a day; next level makes it " + ((S.up.delivery+1)*3) + "." : "Nothing standing yet; the first level brings 3 a day.")},
   {id:"thrift",ic:"🔪",t:"Good knife work",max:4,costs:[340,710,1290,2120],
    d:()=>"Chance a plate uses one fewer ingredient. Currently " + (S.up.thrift*9) + "%."},
-  {id:"board",ic:"📖",t:"The bookings book",max:2,costs:[510,1220],
-   d:()=>"See what the next guest through the door wants."},
   {id:"surge",ic:"🌿",t:"Garnish station",max:4,costs:[320,680,1220,2040],
    d:()=>"Every plate leaves with something extra. Currently +" + (S.up.surge*10) + " on the base."},
   {id:"cool",ic:"📝",t:"Allergy card",max:4,costs:[440,920,1620,2550],
    d:()=>"A flavour they asked you to skip stings less. Currently keeping " + Math.round(avoidFactor()*100) + "% of the pay instead of 35%."}
 ];
+
+const ING_ASKS = ["Something with {i} in it.","I've a craving for {i}. Work with that.",
+  "Put {i} in it and I don't mind what else.","Anything, so long as there's {i}.",
+  "{i}. On the plate. Somehow.","I'll eat whatever you like — with {i}.",
+  "Make me something with {i}.","Surprise me, but I want {i} in there."];
 
 const DISH_ASKS = ["I'll have the {d}, please.","The {d}, if you're doing it today.",
   "One {d}. That's what I came for.","Everyone says to order the {d}. So — the {d}.",
@@ -1299,7 +1293,7 @@ const WORLDS = [
     blurb:"An all-night diner at the bottom of the sea.",
     ingredients:W1_ING, recipes:W1_RECIPES, tiers:W1_TIERS, forms:W1_FORMS,
     customers:W1_CUSTOMERS, asks:W1_ASKS, upgrades:W1_UPGRADES,
-    mult:1, ascendCost:100000, final:false,
+    priceLow:5, priceHigh:30, mult:1, ascendCost:100000, final:false,
     theme:{ink:"#04191F",deep:"#062430",deep2:"#0A2E3A",pan1:"#072834",pan2:"#0A3644",panglow:"#17607055",glow:"#7FE3D4",lantern:"#F2C14E",anemone:"#E8657C",sand:"#EFDCB8"}
   },
   {
@@ -1307,7 +1301,7 @@ const WORLDS = [
     blurb:"A cook-fire at the last waystation before the pass.",
     ingredients:W2_ING, recipes:W2_RECIPES, tiers:W2_TIERS, forms:W2_FORMS,
     customers:W2_CUSTOMERS, asks:W2_ASKS, upgrades:W2_UPGRADES,
-    mult:1.5, ascendCost:300000, final:false,
+    priceLow:8, priceHigh:48, mult:1.5, ascendCost:300000, final:false,
     theme:{ink:"#1A0E14",deep:"#2A1620",deep2:"#38202A",pan1:"#2E161C",pan2:"#4A2620",panglow:"#8A3B2E55",glow:"#E8A87C",lantern:"#F0D264",anemone:"#6FA8C7",sand:"#F5E7D3"}
   },
   {
@@ -1315,7 +1309,7 @@ const WORLDS = [
     blurb:"The only galley still open on a relay station at the edge of the map.",
     ingredients:W3_ING, recipes:W3_RECIPES, tiers:W3_TIERS, forms:W3_FORMS,
     customers:W3_CUSTOMERS, asks:W3_ASKS, upgrades:W3_UPGRADES,
-    mult:2, ascendCost:500000, final:false,
+    priceLow:12, priceHigh:72, mult:2, ascendCost:500000, final:false,
     theme:{ink:"#0A0918",deep:"#141230",deep2:"#1D1A3E",pan1:"#131130",pan2:"#241F52",panglow:"#5B3FA855",glow:"#C2A0FF",lantern:"#6FE3B0",anemone:"#FF7A9C",sand:"#EAE6F7"}
   },
   {
@@ -1323,7 +1317,7 @@ const WORLDS = [
     blurb:"A kitchen on a clifftop airstrip where the pilots and the migrations both stop.",
     ingredients:W4_ING, recipes:W4_RECIPES, tiers:W4_TIERS, forms:W4_FORMS,
     customers:W4_CUSTOMERS, asks:W4_ASKS, upgrades:W4_UPGRADES,
-    mult:2.5, ascendCost:700000, final:false,
+    priceLow:16, priceHigh:100, mult:2.5, ascendCost:700000, final:false,
     theme:{ink:"#0E1A2B",deep:"#16273D",deep2:"#1E3350",pan1:"#122234",pan2:"#28486B",panglow:"#FF9E4F44",glow:"#8CC6FF",lantern:"#FF9E4F",anemone:"#E05E7B",sand:"#EAF1FA"}
   },
   {
@@ -1331,7 +1325,7 @@ const WORLDS = [
     blurb:"An ordinary restaurant on an ordinary street. No gimmicks left — just cooking.",
     ingredients:W5_ING, recipes:W5_RECIPES, tiers:W5_TIERS, forms:W5_FORMS,
     customers:W5_CUSTOMERS, asks:W5_ASKS, upgrades:W5_UPGRADES,
-    mult:3, ascendCost:1000000, final:true,
+    priceLow:20, priceHigh:130, mult:3, ascendCost:1000000, final:true,
     theme:{ink:"#171410",deep:"#231E17",deep2:"#2E271D",pan1:"#1D1912",pan2:"#3A3123",panglow:"#E27D5A44",glow:"#A8C686",lantern:"#E27D5A",anemone:"#C3536B",sand:"#F4EDDF"}
   }
 ];
@@ -1454,9 +1448,13 @@ const avoidFactor = () => Math.min(0.85, 0.35 + (S.up.cool || 0) * 0.10);
 const pool     = () => INGREDIENTS.filter(i => i.tier <= maxTier());
 const perDay   = () => 5 + Math.floor((S.day - 1) / 3);
 const price    = ing => Math.max(2, Math.round((S.prices[ing.id] || 12) * (1 - S.up.bulk*0.08)));
+const priceLow  = () => (WORLD && WORLD.priceLow)  || 5;
+const priceHigh = () => (WORLD && WORLD.priceHigh) || 30;
+
 function rollPrices(){
   S.prevPrices = Object.assign({}, S.prices);
-  INGREDIENTS.forEach(i => { S.prices[i.id] = 5 + Math.floor(Math.random()*26); });
+  const lo = priceLow(), span = priceHigh() - lo + 1;
+  INGREDIENTS.forEach(i => { S.prices[i.id] = lo + Math.floor(Math.random()*span); });
 }
 const totalStock = () => Object.values(S.stock).reduce((a,b)=>a+b,0);
 
@@ -1567,6 +1565,22 @@ function combine(){
 
 function scorePlate(){
   const c = S.customer, p = S.plate;
+  if(c.needs){
+    const have = p.key.split("|");
+    const got = c.needs.filter(id => have.includes(id));
+    const all = got.length === c.needs.length;
+    let pay = got.length ? 25 + 28 * got.length : 5;
+    if(all){
+      pay += 15;
+      if(p.known) pay += 20;
+      pay += (S.up.surge || 0) * 10;
+      if(S.timerOn) pay += Math.round(Math.max(0, c.left / c.total) * 16);
+    }
+    if(c.vip) pay *= 2;
+    pay = Math.max(1, Math.round(pay * (1 + (p.parts - 1) * 0.3) * dayMult() * tipMult() *
+      levelMult() * (1 + Math.min(S.streak,6) * 0.08)));
+    return {pay, hits:[], bads:[], full:all, demandOk:true, needsOk:all, gotCount:got.length};
+  }
   if(c.dish){
     const ok = p.key === c.dish;
     let pay = ok ? 45 + 30 * RECIPES[c.dish].ids.length + (S.up.surge || 0) * 10 : 5;
@@ -1619,7 +1633,19 @@ function serve(){
   S.shells += r.pay;
   S.served++; S.dayServed++;
 
-  if(c.dish){
+  if(c.needs){
+    const named = c.needs.map(id => ING[id].n.toLowerCase()).join(" and ");
+    if(r.needsOk){
+      S.streak++;
+      note(c.name + ' finds the ' + named + ' right where it should be. "' + dish + '." +' + r.pay, "good");
+    } else if(r.gotCount){
+      S.streak = 0;
+      note(c.name + ' picks through it. "Some of it, at least." +' + r.pay);
+    } else {
+      S.streak = 0;
+      note(c.name + ' hands it back. "I asked for ' + named + '." +' + r.pay, "bad");
+    }
+  } else if(c.dish){
     if(r.dishOk){
       S.streak++;
       note(c.name + ' gets exactly what they ordered. "' + dish + '." +' + r.pay, "good");
@@ -1687,8 +1713,25 @@ function makeCustomer(){
     const key = pick(menu);
     const t = patienceFor(vipRoll);
     return {name:person.n, face:person.e, wants:[], avoid:[], demand:null, vip:vipRoll,
-            dish:key, dishName:RECIPES[key].name, total:t, left:t, ask:pick(DISH_ASKS)};
+            dish:key, dishName:RECIPES[key].name, needs:null,
+            total:t, left:t, ask:pick(DISH_ASKS)};
   }
+  // some guests just name an ingredient they want on the plate
+  if(Math.random() < 0.3){
+    const stock = pool().slice();
+    let want = 1;
+    if(S.day >= 5 && Math.random() < 0.45) want = 2;
+    if(S.day >= 10 && Math.random() < 0.2) want = 3;
+    const needs = [];
+    while(needs.length < Math.min(want, stock.length)){
+      const ing = pick(stock);
+      if(!needs.includes(ing.id)) needs.push(ing.id);
+    }
+    const t2 = patienceFor(vipRoll);
+    return {name:person.n, face:person.e, wants:[], avoid:[], demand:null, vip:vipRoll,
+            dish:null, needs, total:t2, left:t2, ask:pick(ING_ASKS)};
+  }
+
   const tags = availableTags();
   const wants = [];
   while(wants.length < Math.min(wantsCount(), tags.length)){
@@ -1706,7 +1749,7 @@ function makeCustomer(){
   if(S.day >= 6 && Math.random() < 0.28) demand = pick(["known","big","solo"]);
   const total = patienceFor(vipRoll);
   return {name:person.n, face:person.e, wants, avoid, demand, vip:vipRoll,
-          dish:null, total, left:total, ask:pick(ASKS)};
+          dish:null, needs:null, total, left:total, ask:pick(ASKS)};
 }
 
 function newDay(){
@@ -1762,6 +1805,11 @@ function drawCustomer(){
   let txt;
   if(c.dish){
     txt = c.ask.replace(/\{d\}/g, "<u>" + c.dishName + "</u>");
+  } else if(c.needs){
+    const list = c.needs.map(id => "<b>" + ING[id].n.toLowerCase() + "</b>");
+    const joined = list.length === 1 ? list[0]
+      : list.slice(0,-1).join(", ") + " and " + list[list.length-1];
+    txt = c.ask.replace(/\{i\}/g, joined);
   } else {
     txt = c.ask.replace("{w}", c.wants.map(w => "<b>" + TAG_WORDS[w] + "</b>").join(" and "));
     if(c.avoid.length) txt += " <i>Nothing " + c.avoid.map(a => TAG_WORDS[a]).join(" or ") + ".</i>";
@@ -1770,16 +1818,6 @@ function drawCustomer(){
   el("cOrder").innerHTML = txt;
   el("cPatience").hidden = !S.timerOn;
   el("cNoRush").hidden = S.timerOn;
-  const peek = el("cPeek");
-  if(S.up.board && S.onDeck){
-    const n = S.onDeck;
-    let p = n.dish
-      ? "Next in: " + n.name + " — ordering the <b>" + n.dishName + "</b>"
-      : "Next in: " + n.name + " — wants <b>" + n.wants.map(w => TAG_WORDS[w]).join(", ") + "</b>";
-    if(!n.dish && S.up.board >= 2 && n.avoid.length) p += ", no " + n.avoid.map(a => TAG_WORDS[a]).join(" or ");
-    peek.innerHTML = p + ".";
-    peek.hidden = false;
-  } else peek.hidden = true;
 }
 
 function drawBowl(){
@@ -1813,7 +1851,7 @@ function drawPlate(){
   const c = S.customer;
   el("dishTags").innerHTML = S.plate.tags.map(t => {
     let cls = "tag";
-    if(c && c.dish){ /* named order — no flavour hints */ }
+    if(c && (c.dish || c.needs)){ /* named or ingredient order — no flavour hints */ }
     else if(c && c.wants.includes(t)) cls += " hit";
     else if(c && c.avoid.includes(t)) cls += " bad";
     return '<span class="' + cls + '">' + TAG_WORDS[t] + '</span>';
@@ -1892,7 +1930,8 @@ function moveTag(ing){
 function drawMarket(){
   el("stockNote").textContent =
     "You order today, the truck delivers tomorrow morning — so buy for the day after this one. " +
-    "Prices are reset every morning, anywhere from 5 to 30 a unit." +
+    "Prices are reset every morning, anywhere from " + priceLow() + " to " + priceHigh() +
+    " a unit — and the swings get wider the further up you go." +
     (S.up.bulk ? " Bulk buying is saving you a further " + (S.up.bulk*8) + "%." : "");
 
   const bar = el("bulkBar");
@@ -1967,16 +2006,16 @@ function drawUpgrades(){
       '<div class="d">' + u.d() + '</div>' +
       '<div class="d" style="color:var(--lantern);opacity:.85">' +
         (maxed ? "Fully upgraded" : "Level " + S.up[u.id] + " of " + u.max) +
-        (pend ? ' · ' + pend + ' on the truck' : '') + '</div></div>';
+        (pend ? ' · ordered, arrives tomorrow' : '') + '</div></div>';
     const b = document.createElement("button");
     b.className = "buy";
-    b.textContent = maxed ? "—" : cost.toLocaleString() + " " + CUR();
-    b.disabled = maxed || S.shells < cost;
+    b.textContent = maxed ? "—" : pend ? "on the truck" : cost.toLocaleString() + " " + CUR();
+    b.disabled = maxed || pend > 0 || S.shells < cost;
     b.addEventListener("click", () => {
-      if(S.shells < cost) return;
+      if(S.shells < cost || (S.pendingUp[u.id] || 0) > 0) return;
       S.shells -= cost;
       S.pendingUp[u.id] = (S.pendingUp[u.id] || 0) + 1;
-      note(u.t + " ordered. It's fitted tomorrow morning.", "good");
+      note(u.t + " ordered. It's fitted tomorrow morning — one upgrade of each kind per day.", "good");
       drawMarket(); drawUpgrades(); paint();
     });
     row.appendChild(b);
