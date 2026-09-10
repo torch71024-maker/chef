@@ -98,6 +98,7 @@ main{display:grid;grid-template-columns:1fr 350px;min-height:0}
   font-size:.75rem;font-weight:600;color:var(--lantern)}
 .mCard .mB button:hover:not(:disabled){background:var(--lantern);color:var(--ink)}
 .mCard .mB button:disabled{opacity:.25;cursor:not-allowed}
+.mCard .mSell{color:var(--glow);font-family:'Jost',sans-serif;font-weight:500;font-size:.78rem;opacity:.85}
 .pIng{display:flex;flex-direction:column;align-items:flex-start;gap:.1rem;text-align:left;
   border:1px solid var(--line);border-radius:14px;padding:.55rem .65rem;position:relative;
   background:color-mix(in srgb, var(--glow) 5%, transparent);transition:background .13s,border-color .13s,transform .07s}
@@ -107,6 +108,7 @@ main{display:grid;grid-template-columns:1fr 350px;min-height:0}
 .pIng .pE{font-size:1.5rem;line-height:1.1}
 .pIng .pN{font-weight:600;font-size:.85rem}
 .pIng .pT{font-size:.66rem;opacity:.6;color:var(--glow)}
+.pIng .pV{font-size:.63rem;color:var(--lantern);opacity:.8;margin-top:.05rem}
 .pIng .pC{position:absolute;top:.5rem;right:.6rem;font-family:'Fraunces',serif;font-weight:700;
   font-size:.95rem;color:var(--lantern)}
 .pIng.out .pC{color:var(--anemone)}
@@ -362,125 +364,12 @@ const W1_ING = [
 const W1_TIERS = ["Home shelf","Market run","Cold room","Specialist order","Smokehouse","Deep haul","The far shelf"];
 const W1_RECIPES = [
   "kelp shrimp rice|Tidepool Roll|briny",
-  "egg rice salt|Onigiri Set|salty",
-  "lemon shrimp rice|Ceviche Bowl|sour",
-  "egg kelp rice|Green Don|creamy",
-  "kelp lemon salt|Sea Salad|fresh",
-  "egg lemon salt|Cured Yolk|salty",
-  "shrimp egg rice|The Full Bowl|rich",
-  "kelp rice salt|Classic Onigiri|briny",
-  "lemon rice salt|Citrus Rice|sour",
-  "egg shrimp salt|Salt-Baked Omelette|briny",
-  "butter rice shrimp|Butter Shrimp Bowl|rich",
-  "chili shrimp rice|Firecracker Bowl|spicy",
-  "mango rice lemon|Mango Sour Rice|sweet",
-  "butter egg salt|Rich Scramble|creamy",
-  "chili kelp egg|Devilled Kelp|spicy",
-  "mango butter honey|Golden Glaze|sweet",
-  "butter chili shrimp|Chili Butter Shrimp|spicy",
-  "mango lemon salt|Sour Mango|sour",
-  "chili egg rice|Fire Fried Rice|spicy",
-  "butter kelp rice|Buttered Seaweed Rice|rich",
-  "cracker honey peanut|Sunken Brittle|crunchy",
-  "squid chili rice|Blistered Squid Bowl|spicy",
-  "cracker salt shrimp|Shrimp Toast|crunchy",
-  "honey lemon egg|Lemon Curd|sweet",
-  "squid rice salt|Ink Bowl|briny",
-  "cracker cheese salt|The Tide Board|salty",
-  "honey mango squid|Sunset Skewer|sweet",
-  "squid butter lemon|Butter Squid|rich",
-  "cracker kelp salt|Sea Crisps|crunchy",
-  "honey rice butter|Sweet Rice Pudding|creamy",
-  "crab butter lemon|Crab Feast|rich",
-  "cheese cracker chili|Molten Board|spicy",
-  "choc honey peanut|Deep Reef Bar|crunchy",
-  "crab rice egg|Crab Don|briny",
-  "cheese egg butter|Molten Cheese Egg|rich",
-  "choc chili salt|Ember Bar|spicy",
-  "crab cheese cracker|Crab Melt|rich",
-  "choc butter honey|Cocoa Glaze|sweet",
-  "crab lemon kelp|Crab and Citrus|sour",
   "ice mango lemon|Mango Granita|cold",
-  "basil lemon kelp|Green Wave Salad|herbal",
-  "peanut chili squid|Crackling Squid|crunchy",
-  "ice choc honey|Frozen Cocoa|cold",
-  "basil cheese egg|Herb Curd|herbal",
-  "peanut cracker choc|Reef Cluster|crunchy",
-  "ice basil mango|Basil Freeze|cold",
-  "basil shrimp lemon|Herbed Shrimp|herbal",
-  "peanut cracker cheese|Nut Board|crunchy",
-  "brew ice choc|Deep Freeze Mocha|cold",
-  "urchin rice egg|Urchin Don|briny",
-  "coconut choc honey|Reef Truffle|rich",
-  "brew honey coconut|Cold Coconut Brew|sweet",
-  "urchin coconut lemon|Uni Citrus|creamy",
-  "coconut ice mango|Tropic Freeze|cold",
-  "brew ice coconut|The Long Night|cold",
-  "truffle rice cheese egg|Truffle Risotto Royale|rich",
   "caviar egg cracker salt|Roe Service|briny",
-  "gold crab butter lemon|Gilded Crab|rich",
-  "truffle kelp egg rice|Forest Floor Don|rich",
-  "caviar urchin rice salt|The Whole Ocean|briny",
-  "gold choc coconut honey|Gilded Truffle|sweet",
-  "kelp shrimp rice egg|The Deep Bowl|briny",
   "chili shrimp butter rice|Firecracker Butter Bowl|spicy",
-  "mango ice coconut honey|Tropic Cup|sweet",
-  "squid peanut chili salt|Salt and Chili Squid|crunchy",
-  "cheese cracker crab butter|The Crab Board|rich",
-  "basil lemon shrimp egg|Herb Ceviche|herbal",
-  "brew choc ice coconut|Midnight Freeze|bitter",
-  "urchin egg rice caviar|Pearl Don|creamy",
-  "truffle cheese cracker salt|Truffle Board|rich",
-  "honey butter cracker peanut|Brittle Board|crunchy",
-  "mango chili lemon salt|Sour Fire|spicy",
-  "crab kelp rice lemon|Crab Roll|briny",
-  "choc peanut ice honey|Frozen Praline|cold",
-  "basil kelp lemon salt|Green Cure|herbal",
-  "squid rice egg salt|Ink Don|chewy",
-  "coconut brew honey ice|Iced Coconut Coffee|cold",
-  "caviar cheese cracker butter|Roe Board|salty",
-  "gold urchin rice caviar|Gilded Uni Don|briny",
-  "truffle butter egg cheese|Truffled Custard|creamy",
-  "shrimp crab butter salt|Shellfish Plate|rich",
-  "chili choc coconut honey|Ember Truffle|spicy",
-  "lemon ice basil mango|Summer Freeze|cold",
-  "kelp squid rice chili|Fire Sea Bowl|spicy",
-  "egg cheese butter cracker|Melt Plate|rich",
-  "peanut choc coconut ice|Frozen Reef Bar|cold",
-  "brew urchin egg rice|Night Shift Don|briny",
-  "honey crab butter cracker|Sweet Crab Toast|sweet",
-  "truffle caviar egg butter|The Extravagance|rich",
-  "gold coconut ice mango|Gilded Tropics|cold",
-  "kelp shrimp rice egg salt|The Classic Set|briny",
-  "chili shrimp butter rice egg|Fire Bowl Deluxe|spicy",
-  "mango coconut ice honey lemon|Tropic Parfait|cold",
-  "crab cheese cracker butter salt|The Crab Feast|rich",
-  "basil lemon shrimp egg rice|Herb Ceviche Bowl|herbal",
-  "choc peanut honey butter cracker|Reef Bar Deluxe|crunchy",
-  "urchin caviar rice egg salt|Ocean Don|briny",
-  "brew choc ice coconut honey|The Long Night Deluxe|cold",
   "truffle cheese egg rice butter|Truffle Risotto|creamy",
-  "squid chili peanut rice salt|Crackling Bowl|crunchy",
-  "gold caviar urchin rice egg|Gilded Ocean|briny",
-  "kelp basil lemon ice salt|Frozen Garden|cold",
-  "crab shrimp squid rice lemon|Three Catch Bowl|briny",
-  "honey mango coconut ice basil|Island Cup|sweet",
-  "cheese cracker peanut butter salt|Board Deluxe|salty",
-  "truffle gold cheese egg cracker|The Gold Board|rich",
-  "brew coconut honey urchin choc|Night Cellar|bitter",
-  "chili squid crab rice salt|Fire Catch|spicy",
-  "egg rice kelp lemon butter|Morning Don|creamy",
-  "caviar cheese cracker butter gold|The Gilded Service|salty",
-  "kelp shrimp rice egg lemon salt|The House Set|briny",
-  "crab urchin caviar rice egg salt|The Whole Ocean Set|briny",
-  "choc peanut honey coconut butter ice|The Reef Sundae|sweet",
-  "truffle gold caviar cheese egg butter|The Deep End|rich",
-  "chili squid shrimp rice egg salt|Fire Feast|spicy",
-  "mango coconut ice honey lemon basil|Tropic Feast|cold",
-  "brew choc coconut ice honey peanut|Night Sundae|cold",
-  "cheese cracker crab butter peanut salt|The Full Board|rich",
-  "basil kelp lemon shrimp rice egg|Garden of the Sea|herbal",
-  "gold truffle urchin caviar rice egg|The Master's Set|rich"
+  "choc peanut honey butter cracker|Reef Bar Deluxe|crunchy",
+  "truffle gold caviar cheese egg butter|The Deep End|rich"
 ];
 const W1_FORMS = [
   {tag:"cold",words:["Granita","Float","Freeze"]},
@@ -551,125 +440,12 @@ const W2_ING = [
 const W2_TIERS = ["Cart stores","Oasis market","Spice road","Salt flats","The high pass","Night bazaar","The caravan's own"];
 const W2_RECIPES = [
   "chick flat rocksalt|Salted Hummus Plate|creamy",
-  "date goat flat|Stuffed Dates|sweet",
-  "chick mintl flat|Herbed Hummus|fresh",
-  "date mintl goat|Mint and Date|fresh",
-  "flat goat rocksalt|Salt Curd Flatbread|salty",
-  "chick date goat|Sweet Mash|sweet",
-  "mintl rocksalt flat|Mint Salt Bread|cold",
-  "date flat rocksalt|Salted Date Roll|salty",
-  "chick goat mintl|Green Mash|creamy",
-  "date chick flat|Cart Breakfast|chewy",
-  "goat mintl rocksalt|Mint Curd|fresh",
-  "flat chick goat|The Road Plate|rich",
-  "lamb flat rocksalt|Salt Lamb Wrap|smoky",
-  "fig2 goat date|Fig and Curd|sweet",
-  "lemon2 chick flat|Lemon Hummus|sour",
-  "lamb mintl flat|Mint Lamb Wrap|fresh",
-  "fig2 date chick|Orchard Mash|sweet",
-  "lemon2 goat mintl|Preserved Curd|sour",
-  "lamb fig2 flat|Fig-Glazed Lamb|sweet",
-  "lemon2 date rocksalt|Preserved Sweet|sour",
-  "yog mintl chick|Mint Yoghurt Bowl|cold",
-  "olivec flat goat|Olive Board|salty",
-  "pistachio date goat|Pistachio Dates|crunchy",
-  "yog lemon2 mintl|Soured Cream|sour",
-  "olivec lemon2 flat|The Preserved Plate|bitter",
-  "pistachio fig2 yog|Fig Brittle Cup|crunchy",
-  "yog lamb mintl|Yoghurt Lamb|creamy",
-  "olivec lamb flat|Olive Lamb Wrap|salty",
-  "pistachio flat rocksalt|Nut Flatbread|crunchy",
-  "yog fig2 date|Fig Cream|creamy",
-  "cumin chick flat|Cumin Chickpeas|smoky",
   "harissa lamb flat|Harissa Wrap|spicy",
-  "rose yog date|Rose Cream|sweet",
-  "cumin lamb rocksalt|Cumin Lamb|smoky",
-  "harissa chick yog|Fire Hummus|spicy",
-  "rose pistachio yog|Rose Brittle Cup|crunchy",
-  "cumin olivec flat|Cumin Olives|smoky",
-  "harissa goat flat|Fire Curd|spicy",
-  "rose fig2 date|Rose Orchard|sweet",
-  "cumin rose chick|The Spice Market|herbal",
-  "honey2 goat flat|Honeyed Curd|sweet",
-  "pomeg yog mintl|Pomegranate Cream|sour",
-  "almond honey2 date|Almond Honey Dates|crunchy",
-  "honey2 pistachio yog|Honey Brittle|crunchy",
-  "pomeg lamb flat|Pomegranate Lamb|sour",
-  "almond rose yog|Rose Almond Cream|crunchy",
-  "honey2 fig2 goat|Honeyed Figs|sweet",
-  "pomeg mintl flat|Pomegranate Mint|fresh",
-  "almond date pistachio|Nut and Date Plate|crunchy",
-  "saff2 chick flat|Saffron Chickpeas|herbal",
-  "yak flat rocksalt|Butter Flatbread|rich",
-  "snow pomeg mintl|Oasis Ice|cold",
-  "saff2 lamb yog|Saffron Lamb|herbal",
-  "yak lamb cumin|Cumin Butter Lamb|rich",
-  "snow mintl yog|Mint Freeze|cold",
-  "saff2 yak lamb flat|High Pass Wrap|rich",
-  "snow pomeg rose yog|Frozen Rose|cold",
-  "gsugar rose almond yog|Bazaar Cream|sweet",
-  "dtruffle yak flat goat|Truffle Butter Bread|rich",
-  "frank yog date honey2|Incense Cream|bitter",
-  "harissa lamb cumin flat|Caravan Wrap|spicy",
-  "honey2 pistachio almond date|Traveller's Board|crunchy",
-  "pomeg snow mintl lemon2|Well-Chilled Plate|cold",
-  "cumin chick yog flat|Cumin Bowl|smoky",
-  "olivec lemon2 goat flat|Salt Flat Supper|salty",
   "rose honey2 yog pistachio|Rose Parfait|sweet",
-  "saff2 rose lamb yog|Saffron Rose Lamb|herbal",
-  "yak honey2 flat date|Butter and Honey Roll|rich",
-  "snow rose almond yog|Frost Almond Cream|cold",
-  "gsugar dtruffle yak flat|Gilded Truffle Bread|rich",
-  "frank pomeg snow yog|Nightfall Cup|bitter",
-  "harissa cumin chick flat|Twice Spiced Hummus|spicy",
-  "fig2 honey2 pistachio goat|Fig Board|sweet",
-  "lamb pomeg cumin flat|Ember Feast|sour",
-  "mintl snow lemon2 yog|Green Freeze|cold",
-  "almond gsugar rose date|Night Sweet|crunchy",
   "dtruffle saff2 yak lamb|The Caravan Master's Plate|rich",
-  "olivec cumin harissa flat|Fire Olive Bread|spicy",
-  "yog pomeg rose almond|Bazaar Parfait|sour",
-  "honey2 date fig2 pistachio|Sweet Cart Plate|sweet",
-  "saff2 yak snow yog|High Pass Cream|rich",
-  "frank dtruffle saff2 flat|The Deep Cellar|herbal",
-  "gsugar almond pistachio honey2|Gilded Brittle|crunchy",
-  "lamb harissa yog flat|Hot Lamb Wrap|spicy",
-  "chick lemon2 olivec flat|Sour Road Plate|sour",
-  "snow gsugar rose mintl|Frost Rose|cold",
-  "cumin saff2 chick yog|Spiced Chickpea Bowl|herbal",
-  "dtruffle goat flat rocksalt|Truffle Curd Board|rich",
-  "pomeg fig2 honey2 yog|Orchard Parfait|sweet",
-  "frank rose gsugar yog|Incense Sweet|bitter",
-  "flat chick lemon2 mintl goat|The Waystation Plate|creamy",
-  "lamb harissa cumin yog flat|The Fire Caravan|spicy",
-  "rose almond pistachio gsugar yog|Bazaar Sweet Plate|crunchy",
-  "saff2 yak lamb cumin flat|High Pass Feast|rich",
   "snow pomeg rose mintl yog|Midnight Oasis|cold",
-  "honey2 fig2 date almond goat|Orchard Board|sweet",
-  "dtruffle yak saff2 goat flat|Truffle Table|rich",
-  "frank gsugar rose honey2 yog|Last Well|bitter",
   "olivec lemon2 cumin chick flat|Salt Flat Feast|salty",
-  "pomeg lamb saff2 yog flat|Saffron Pomegranate Lamb|sour",
-  "gsugar almond rose pistachio date|Gilded Sweet Plate|crunchy",
-  "snow mintl lemon2 pomeg yog|Deep Well Ice|cold",
-  "cumin harissa olivec lamb flat|Ember Caravan|spicy",
-  "yak honey2 date fig2 flat|Butter Orchard Roll|rich",
-  "saff2 rose frank yog honey2|Incense Parfait|herbal",
-  "chick cumin yog mintl flat|Green Spice Bowl|fresh",
-  "dtruffle frank saff2 yak goat|The Cellar Plate|herbal",
-  "almond honey2 pistachio fig2 yog|Nut Orchard Cream|crunchy",
-  "harissa pomeg lamb cumin yog|Fire and Fruit|spicy",
-  "gsugar snow rose almond yog|Gilded Frost|cold",
-  "flat chick goat mintl date rocksalt|The Full Cart|creamy",
-  "lamb harissa cumin saff2 yog flat|The Caravan Feast|spicy",
-  "rose gsugar almond pistachio honey2 yog|The Bazaar Table|sweet",
-  "snow pomeg mintl lemon2 rose yog|The Long Freeze|cold",
-  "dtruffle yak saff2 lamb goat flat|The Waystation Feast|rich",
-  "frank gsugar rose honey2 date yog|Last Light of the Road|bitter",
-  "olivec cumin harissa chick lemon2 flat|The Spice Road Plate|smoky",
-  "fig2 date honey2 almond pistachio goat|The Orchard Feast|sweet",
-  "saff2 dtruffle frank yak gsugar flat|The Master's Table|rich",
-  "pomeg snow rose mintl gsugar yog|The Night Oasis|cold"
+  "dtruffle yak saff2 lamb goat flat|The Waystation Feast|rich"
 ];
 const W2_FORMS = [
   {tag:"cold",words:["Sherbet","Chill","Frost Cup"]},
@@ -740,124 +516,11 @@ const W3_ING = [
 const W3_TIERS = ["Galley stores","Hydroponics","Cargo manifest","Salvage bay","Cryo hold","Void market","The far shelf"];
 const W3_RECIPES = [
   "algae protein ration|Standard Issue|salty",
-  "noodle protein saltc|Protein Noodles|rich",
-  "citruspod algae ration|Citrus Tray|sour",
-  "noodle algae saltc|Green Noodles|briny",
-  "citruspod protein saltc|Citrus Curd|sour",
-  "ration noodle protein|Double Carb Tray|chewy",
-  "algae saltc citruspod|Salt Algae|briny",
-  "noodle citruspod ration|Cold Noodle Cup|fresh",
-  "protein ration saltc|Ration Loaf|rich",
-  "algae protein noodle|Green Curd Bowl|creamy",
-  "citruspod ration greens|Bright Tray|fresh",
-  "saltc ration algae|Galley Basic|salty",
-  "protein citruspod ration|Morning Tray|sour",
-  "noodle saltc greens|Salt Noodles|salty",
-  "algae citruspod protein|Green Citrus Curd|creamy",
-  "greens protein noodle|Garden Bowl|fresh",
-  "tomato noodle saltc|Red Noodles|sour",
-  "pepper ration algae|Hot Tray|spicy",
-  "greens tomato citruspod|Hydro Salad|fresh",
-  "pepper protein noodle|Spiced Curd Noodles|spicy",
-  "tomato greens ration|Garden Tray|fresh",
-  "pepper tomato noodle|Hot Red Bowl|spicy",
-  "greens algae saltc|Sea Garden|briny",
-  "tomato protein citruspod|Red Curd|sour",
-  "pepper greens ration|Fire Garden|spicy",
   "mushroom noodle protein|Mushroom Bowl|rich",
-  "soybean algae saltc|Soy Paste Tray|creamy",
-  "micromint citruspod greens|Mint Citrus Salad|cold",
-  "mushroom greens noodle|Forest Floor|herbal",
-  "soybean noodle protein|Soy Noodles|rich",
-  "micromint greens algae|Cool Greens|cold",
-  "mushroom tomato noodle|Umami Bowl|rich",
-  "soybean pepper noodle|Spiced Soy|spicy",
-  "micromint soybean citruspod|Mint Soy Cup|fresh",
-  "mushroom soybean greens|Vat Garden|herbal",
-  "coffee sugar protein|Ship Sweet|sweet",
-  "sugar citruspod ration|Candied Tray|sweet",
-  "printcheese noodle tomato|Cheese Noodles|rich",
-  "coffee protein saltc|Coffee Curd|bitter",
-  "sugar greens citruspod|Candied Greens|sweet",
-  "printcheese mushroom noodle|Mushroom Melt|rich",
-  "coffee sugar citruspod|Sweet Black|bitter",
-  "printcheese pepper ration|Hot Cheese Tray|spicy",
-  "sugar soybean micromint|Sweet Soy Cup|sweet",
-  "coffee printcheese sugar|Bitter Rind|bitter",
-  "driedfish noodle saltc|Fish Noodles|briny",
-  "oldchoc sugar coffee|Old Mocha|bitter",
-  "smokedration ration protein|Smoked Block|smoky",
-  "driedfish greens citruspod|Sea Salad|salty",
-  "oldchoc sugar protein|Chocolate Curd|sweet",
-  "smokedration printcheese noodle|Smoked Melt|rich",
-  "driedfish algae saltc|Salvage Catch|briny",
-  "oldchoc micromint sugar|Mint Chocolate|cold",
-  "smokedration pepper noodle|Smoked Fire Bowl|smoky",
-  "driedfish tomato greens|Salvage Salad|salty",
-  "cryoice citruspod sugar micromint|Cold Cup|cold",
-  "cryocream oldchoc sugar coffee|Cocoa Cream|creamy",
-  "cryosteak pepper saltc noodle|Peppered Steak Tray|spicy",
-  "cryoice micromint greens citruspod|Frost Garden|cold",
-  "cryocream sugar protein oldchoc|Cocoa Curd|creamy",
-  "cryosteak mushroom noodle saltc|Steak and Mushroom|rich",
-  "cryoice cryocream sugar citruspod|Cloud Ice|cold",
-  "cryosteak smokedration pepper ration|Double Smoke|smoky",
-  "starsalt driedfish algae saltc|Star Cure|salty",
-  "voidhoney oldchoc coffee sugar|Void Mocha|bitter",
-  "iongold cryocream sugar oldchoc|Gilded Cream|rich",
-  "starsalt cryosteak saltc noodle|Star-Salted Steak|salty",
-  "voidhoney sugar micromint cryocream|Void Silk|sweet",
-  "iongold cryosteak mushroom saltc|Gilded Steak|rich",
-  "greens mushroom soybean noodle|Galley Bowl|rich",
   "coffee cryocream sugar protein|Long Watch|rich",
-  "driedfish starsalt greens citruspod|Star Salad|salty",
-  "smokedration cryosteak starsalt ration|Ember Service|smoky",
-  "tomato printcheese mushroom noodle|Station Bowl|rich",
-  "pepper smokedration tomato noodle|Fire Salvage Bowl|spicy",
   "oldchoc voidhoney iongold sugar|The Dark Bar|bitter",
-  "micromint cryoice tomato greens|Cold Sky Salad|cold",
-  "soybean mushroom printcheese noodle|Melt Bowl|creamy",
-  "protein algae greens citruspod|The Standard Tray|fresh",
-  "cryocream voidhoney sugar soybean|Silk Sky|creamy",
-  "driedfish printcheese noodle saltc|Fish Melt|salty",
-  "starsalt cryoice citruspod micromint|Star Frost|cold",
-  "iongold voidhoney oldchoc cryocream|Gilded Dark|rich",
-  "cryosteak pepper smokedration starsalt|Ember Steak|smoky",
-  "sugar oldchoc cryocream cryoice|Frozen Cocoa|cold",
-  "greens micromint mushroom soybean|Living Plate|herbal",
-  "coffee oldchoc voidhoney cryocream|Void Coffee|bitter",
-  "tomato greens pepper printcheese|Hot Garden Melt|spicy",
-  "protein driedfish algae starsalt|Salvage Curd|briny",
-  "iongold cryocream sugar citruspod|Gilded Citrus|sweet",
-  "ration algae protein citruspod saltc|The Full Standard|fresh",
-  "noodle mushroom soybean greens protein|The Galley Special|rich",
-  "coffee cryocream sugar oldchoc voidhoney|The Long Night|bitter",
-  "cryosteak starsalt smokedration pepper saltc|Ember Service Deluxe|smoky",
   "cryoice cryocream sugar micromint citruspod|Cold Sky|cold",
-  "driedfish starsalt algae greens citruspod|The Salvage Plate|salty",
   "iongold cryosteak starsalt mushroom saltc|The Captain's Tray|rich",
-  "voidhoney oldchoc iongold sugar cryocream|The Dark Service|bitter",
-  "greens micromint mushroom soybean citruspod|The Hydro Plate|herbal",
-  "pepper smokedration cryosteak tomato noodle|Fire Service|spicy",
-  "printcheese mushroom noodle tomato greens|Station Melt|rich",
-  "sugar oldchoc cryocream cryoice micromint|Frozen Mint Cocoa|cold",
-  "protein algae noodle saltc citruspod|Galley Basics|creamy",
-  "starsalt iongold cryocream sugar citruspod|Gilded Frost|cold",
-  "driedfish printcheese noodle starsalt saltc|Salvage Melt|salty",
-  "coffee sugar cryocream protein oldchoc|Watch Change|rich",
-  "cryosteak mushroom soybean noodle pepper|Deep Bowl|rich",
-  "voidhoney micromint cryoice sugar cryocream|Void Sundae|sweet",
-  "greens tomato pepper printcheese noodle|Hydro Melt|spicy",
-  "iongold voidhoney starsalt oldchoc sugar|Far Shelf Bar|bitter",
-  "ration algae protein citruspod saltc noodle|The Whole Galley|salty",
-  "cryosteak starsalt iongold mushroom saltc noodle|The Captain's Table|rich",
-  "cryoice cryocream sugar micromint citruspod oldchoc|The Far Freeze|cold",
-  "voidhoney oldchoc iongold coffee sugar cryocream|Night Flight|bitter",
-  "greens mushroom soybean micromint tomato noodle|The Living Bowl|herbal",
-  "driedfish starsalt algae greens citruspod saltc|The Whole Salvage|briny",
-  "pepper smokedration cryosteak tomato printcheese noodle|Four Alarm|spicy",
-  "sugar oldchoc cryocream voidhoney iongold micromint|The Last Sweet|sweet",
-  "protein noodle mushroom printcheese greens saltc|The Full Tray|rich",
   "iongold starsalt voidhoney cryosteak cryocream sugar|The Last Light|rich"
 ];
 const W3_FORMS = [
@@ -928,125 +591,12 @@ const W4_ING = [
 ];
 const W4_TIERS = ["Field kitchen","Hangar stores","The orchard strip","Coastal flyway","Mountain updraft","Stratosphere run","The eyrie"];
 const W4_RECIPES = [
-  "egg4 butter4 toast|Eggs on Toast|rich",
-  "apple oat butter4|Apple Oats|sweet",
-  "salt4 toast butter4|Salt Butter Toast|crunchy",
-  "egg4 oat salt4|Savoury Porridge|salty",
-  "apple toast butter4|Apple Toast|fresh",
-  "oat toast egg4|Grain Plate|chewy",
-  "apple salt4 oat|Salted Apple Oats|sour",
-  "egg4 salt4 toast|Salted Egg Toast|salty",
-  "butter4 oat salt4|Butter Oats|rich",
-  "apple egg4 toast|Orchard Scramble|sweet",
   "bacon egg4 toast|The Early Shift|smoky",
-  "coffee4 oat butter4|Coffee Oats|bitter",
-  "cheddar toast butter4|Cheese on Toast|rich",
-  "bacon cheddar toast|Bacon and Cheese|salty",
-  "coffee4 apple oat|Orchard Coffee Oats|bitter",
-  "cheddar apple toast|Cheese and Apple|sour",
-  "bacon egg4 cheddar|The Hangar Fry|rich",
-  "coffee4 salt4 oat|Salted Coffee Oats|bitter",
-  "cheddar egg4 butter4|Cheese Omelette|rich",
-  "bacon oat egg4|Smoked Porridge|smoky",
-  "honey4 oat butter4|Honey Oats|sweet",
-  "onion egg4 toast|Onion Omelette|smoky",
-  "cream4 apple oat|Apple Cream Oats|creamy",
-  "honey4 cheddar toast|Honey Rind Toast|sweet",
-  "onion cheddar toast|Cheese and Onion|smoky",
-  "cream4 coffee4 honey4|Tower Coffee|rich",
-  "honey4 apple oat|Honeyed Apple Oats|sweet",
-  "onion bacon toast|Fried Together|smoky",
-  "cream4 egg4 butter4|Custard Cup|creamy",
-  "honey4 cream4 oat|Honeyed Cream Oats|sweet",
-  "pear cheddar toast|Pear and Cheddar|sweet",
-  "walnut honey4 oat|Honeyed Walnut Oats|crunchy",
-  "thyme egg4 butter4|Thyme Eggs|herbal",
-  "pear walnut cream4|Pear and Walnut Cream|crunchy",
-  "thyme onion egg4|Herb Omelette|herbal",
-  "walnut cheddar toast|Walnut Rind|bitter",
-  "pear thyme cream4|Pear and Thyme|fresh",
-  "walnut coffee4 honey4|Walnut Coffee|bitter",
-  "thyme butter4 toast|Thyme Butter Toast|herbal",
-  "pear honey4 oat|Honeyed Pear Oats|sweet",
   "mussel cream4 onion|Mussel Chowder|creamy",
-  "mackerel toast lemon4|Mackerel on Toast|smoky",
-  "lemon4 butter4 egg4|Lemon Butter Eggs|sour",
-  "mussel lemon4 thyme|Herbed Mussels|briny",
-  "mackerel onion toast|Mackerel and Onion|smoky",
-  "lemon4 cream4 honey4|Lemon Cream|sour",
-  "mussel thyme cream4|Herb Chowder|briny",
-  "mackerel lemon4 salt4|Soused Mackerel|sour",
-  "lemon4 pear cream4|Lemon Pear Cream|fresh",
-  "mussel onion butter4|Butter Mussels|briny",
-  "venison thyme onion|Thyme Venison|herbal",
-  "snowwater lemon4 apple|Snow Lemon|cold",
-  "alp toast butter4|Alp Toast|rich",
-  "venison alp toast|Venison and Alp|smoky",
-  "snowwater apple cream4|Apple Frost|cold",
-  "cloudcream snowwater apple honey4|Cloud Apple|cold",
-  "feathersugar walnut honey4 oat|Gilded Granola|crunchy",
-  "firethorn venison onion toast|Firethorn Venison|spicy",
-  "cloudcream coffee4 honey4 cream4|Cloud Coffee|creamy",
-  "feathersugar cream4 apple oat|Feathered Oats|sweet",
-  "firethorn cheddar onion toast|Fire Melt|spicy",
-  "bacon egg4 cheddar toast|The Crosswind Special|rich",
-  "apple cream4 oat honey4|Orchard Bowl|sweet",
   "mussel mackerel lemon4 thyme|The Coast Plate|briny",
-  "venison alp thyme onion|The Updraft|herbal",
-  "snowwater cloudcream apple lemon4|Cloud Base|cold",
-  "walnut pear cheddar honey4|The Orchard Board|sweet",
-  "mackerel onion salt4 toast|Smokehouse Catch|smoky",
-  "firethorn venison alp onion|Storm Fire|spicy",
   "feathersugar cloudcream honey4 cream4|First Light|sweet",
-  "coffee4 walnut honey4 cream4|Tower Special|bitter",
-  "alp venison snowwater thyme|Mountain Plate|rich",
-  "lemon4 mussel cream4 butter4|Lemon Mussel Chowder|creamy",
-  "cheddar onion bacon toast|The Hangar Melt|smoky",
-  "apple pear walnut honey4|Windfall Board|sweet",
-  "snowwater lemon4 apple cream4|Mountain Ice|cold",
-  "alp cheddar toast butter4|Double Melt|rich",
-  "mackerel mussel onion cream4|The Flyway|briny",
-  "firethorn cheddar bacon toast|Fire Fry|spicy",
-  "cloudcream feathersugar apple snowwater|Sky Sundae|cold",
-  "thyme venison alp cream4|Herbed Venison|herbal",
-  "coffee4 cloudcream feathersugar honey4|Dawn Coffee|creamy",
-  "walnut alp pear thyme|The High Board|crunchy",
-  "salt4 mackerel lemon4 butter4|Salt Catch|salty",
-  "egg4 alp thyme butter4|Alp Scramble|rich",
-  "honey4 feathersugar walnut cream4|Gilded Cream|sweet",
-  "onion venison firethorn cheddar|Ember Plate|spicy",
-  "snowwater cloudcream lemon4 honey4|Frost Cup|cold",
-  "bacon mussel onion cream4|Coast Breakfast|smoky",
-  "apple oat walnut cream4|Orchard Granola|crunchy",
-  "bacon egg4 cheddar toast butter4|The Full Breakfast|rich",
-  "mussel mackerel lemon4 thyme onion|The Coast Feast|briny",
   "venison alp thyme onion toast|The Mountain Feast|herbal",
-  "snowwater cloudcream apple lemon4 honey4|Cloud Base Deluxe|cold",
-  "feathersugar cloudcream honey4 cream4 apple|First Light Deluxe|sweet",
-  "firethorn venison alp onion cheddar|Storm Fire Plate|spicy",
   "walnut pear apple honey4 cream4|The Orchard Feast|sweet",
-  "coffee4 cream4 honey4 walnut oat|Tower Breakfast|bitter",
-  "mackerel mussel lemon4 butter4 salt4|Salt Coast Plate|salty",
-  "alp cheddar onion bacon toast|The Hangar Feast|rich",
-  "snowwater lemon4 apple pear cream4|Mountain Ice Cup|cold",
-  "thyme venison alp snowwater onion|The Updraft Plate|herbal",
-  "feathersugar walnut honey4 oat cream4|Gilded Granola Bowl|crunchy",
-  "firethorn cheddar bacon onion toast|Fire Hangar|spicy",
-  "cloudcream coffee4 feathersugar honey4 cream4|Dawn Service|creamy",
-  "egg4 alp thyme butter4 toast|Alp Breakfast|rich",
-  "mussel cream4 onion thyme lemon4|Chowder Deluxe|creamy",
-  "apple oat honey4 walnut cream4|The Orchard Bowl|sweet",
-  "mackerel salt4 lemon4 onion toast|The Landing|smoky",
-  "venison firethorn onion alp bacon|Ember Feast|spicy",
-  "bacon egg4 cheddar toast butter4 onion|The Crosswind Fry|rich",
-  "mussel mackerel lemon4 thyme onion cream4|The Whole Flyway|briny",
-  "venison alp thyme snowwater onion toast|The Whole Updraft|herbal",
-  "cloudcream feathersugar snowwater apple honey4 cream4|First Light Feast|cold",
-  "firethorn venison alp cheddar onion bacon|Night Flight|spicy",
-  "walnut pear apple honey4 cream4 oat|The Orchard Table|sweet",
-  "coffee4 cream4 cloudcream honey4 walnut oat|The Tower Table|bitter",
-  "mackerel mussel salt4 lemon4 butter4 onion|The Whole Catch|salty",
-  "feathersugar cloudcream honey4 apple walnut cream4|The Eyrie Sweet|sweet",
   "alp venison firethorn feathersugar cloudcream toast|The Chef's Kiss|rich"
 ];
 const W4_FORMS = [
@@ -1117,126 +667,13 @@ const W5_ING = [
 ];
 const W5_TIERS = ["The basics","The fridge","The spice rack","The greengrocer","The butcher","The bakery","The chef's table"];
 const W5_RECIPES = [
-  "eggs butter salt|Buttered Eggs|creamy",
-  "flour butter salt|Shortcrust|chewy",
-  "eggs flour salt|Fresh Pasta|chewy",
-  "oil flour butter|Roux|rich",
-  "eggs oil pepper|Fried Egg|crunchy",
-  "butter flour eggs|Pastry Base|rich",
-  "salt pepper oil|Seasoning Oil|spicy",
-  "eggs pepper butter|Peppered Scramble|spicy",
-  "flour oil salt|Flatbread|chewy",
-  "butter salt pepper|Pepper Butter|salty",
-  "milk flour butter|White Sauce|creamy",
-  "garlic butter oil|Garlic Butter|spicy",
-  "onion oil butter|Sweated Onions|smoky",
-  "milk eggs flour|Pancake Batter|creamy",
-  "garlic onion oil|Soffritto|smoky",
-  "onion flour oil|Onion Batter|crunchy",
-  "milk eggs butter|Custard|creamy",
-  "garlic eggs butter|Garlic Eggs|spicy",
-  "onion salt pepper|Peppered Onions|spicy",
-  "milk butter salt|Warm Milk Sauce|creamy",
   "tomato onion garlic|Marinara|herbal",
-  "lemon butter garlic|Lemon Garlic Butter|sour",
-  "cheddar eggs butter|Cheese Omelette|rich",
-  "tomato lemon salt|Sharp Tomato|sour",
-  "cheddar milk flour|Cheese Sauce|creamy",
-  "lemon eggs butter|Lemon Curd|sweet",
-  "cheddar onion butter|Cheese and Onion|rich",
-  "tomato cheddar oil|Tomato and Cheese|rich",
-  "lemon milk eggs|Lemon Custard|sour",
-  "cheddar garlic butter|Garlic Rind|spicy",
-  "potato butter milk|Mashed Potato|creamy",
-  "mushroom butter garlic|Garlic Mushrooms|rich",
-  "basil tomato oil|Tomato and Basil|herbal",
-  "potato oil salt|Roast Potatoes|crunchy",
-  "mushroom onion butter|Mushroom and Onion|rich",
-  "basil garlic oil|Basil Oil|herbal",
-  "potato cheddar milk|Cheesy Mash|rich",
-  "mushroom tomato garlic|Mushroom Marinara|rich",
-  "basil lemon oil|Basil Dressing|fresh",
-  "potato onion oil|Fried Potatoes|smoky",
-  "chicken garlic butter|Garlic Chicken|rich",
   "bacon eggs butter|Bacon and Eggs|smoky",
-  "cream eggs milk|Quiche Filling|creamy",
-  "chicken onion salt|Roast Chicken|rich",
-  "bacon onion oil|Bacon and Onion|smoky",
-  "cream mushroom butter|Mushroom Sauce|creamy",
-  "chicken lemon garlic|Lemon Chicken|sour",
-  "bacon cheddar eggs|Bacon and Cheese|salty",
-  "cream potato butter|Pommes Purée|creamy",
-  "chicken tomato garlic|Chicken Marinara|rich",
-  "prawn garlic oil|Garlic Prawns|spicy",
-  "choc cream butter|Ganache|rich",
-  "honey butter milk|Honey Butter|sweet",
-  "prawn lemon butter|Lemon Prawns|sour",
-  "choc honey cream|Chocolate Cream|sweet",
   "parmesan eggs bacon cream|Carbonara|rich",
-  "truffleoil potato parmesan salt|Truffle Fries|rich",
-  "wagyu salt pepper butter|Salted Wagyu|rich",
-  "parmesan tomato basil oil|Pomodoro|herbal",
-  "truffleoil mushroom cream butter|Double Truffle|herbal",
-  "wagyu mushroom garlic butter|Wagyu and Mushroom|rich",
-  "chicken potato onion cream|Chicken Pie Filling|rich",
-  "bacon eggs cheddar butter|The Full English|smoky",
   "prawn garlic lemon oil|Gambas al Ajillo|spicy",
-  "choc cream eggs honey|Chocolate Mousse|sweet",
-  "tomato basil garlic oil|Marinara Deluxe|herbal",
-  "potato cream butter milk|Gratin|creamy",
-  "mushroom garlic cream butter|Mushroom Cream|creamy",
-  "chicken bacon onion cream|Chicken and Bacon|rich",
-  "cheddar potato milk butter|Potato Gratin|rich",
-  "lemon prawn garlic butter|Prawn Butter|sour",
-  "honey choc butter cream|Chocolate Sauce|sweet",
-  "parmesan mushroom cream butter|Parmesan Mushrooms|rich",
-  "tomato cheddar basil oil|Caprese Bake|herbal",
-  "bacon potato onion oil|Hash|smoky",
-  "eggs milk flour butter|Crêpes|creamy",
-  "chicken garlic lemon oil|Roast Chicken Dinner|sour",
-  "prawn tomato garlic oil|Prawn Marinara|briny",
-  "truffleoil eggs butter salt|Truffled Eggs|rich",
-  "wagyu parmesan pepper butter|Wagyu Parmesan|rich",
-  "choc honey cream milk|Hot Chocolate|sweet",
-  "basil parmesan oil garlic|Pesto|herbal",
-  "mushroom potato cream onion|Mushroom Gratin|creamy",
-  "bacon cheddar potato cream|Loaded Potato|smoky",
-  "lemon honey butter cream|Lemon Cream|sour",
-  "chicken mushroom cream butter|Chicken Fricassée|rich",
-  "prawn butter garlic parmesan|Prawn Parmesan|rich",
-  "tomato onion garlic basil|Ragù Base|herbal",
-  "wagyu truffleoil salt pepper|Truffle Wagyu|rich",
-  "parmesan potato cream milk|Parmesan Mash|creamy",
-  "bacon eggs cheddar butter tomato|The Full Breakfast|smoky",
   "chicken potato onion cream butter|Chicken Casserole|rich",
-  "parmesan eggs bacon cream pepper|Carbonara Proper|rich",
-  "tomato basil garlic oil parmesan|Pomodoro Deluxe|herbal",
-  "prawn garlic lemon butter oil|Prawn Scampi|sour",
   "choc cream eggs honey butter|Chocolate Torte|sweet",
-  "mushroom cream garlic butter parmesan|Mushroom Velouté|creamy",
-  "potato cheddar cream milk butter|The Gratin|rich",
-  "wagyu truffleoil parmesan salt butter|The Chef's Table|rich",
-  "chicken bacon mushroom cream onion|Chicken and Bacon Pie|rich",
-  "basil tomato parmesan cheddar garlic|The Garden Plate|herbal",
-  "lemon prawn parmesan garlic butter|Prawn Linguine|sour",
-  "honey choc cream milk butter|Chocolate Pudding|sweet",
-  "bacon potato onion cheddar oil|The Hash|smoky",
-  "eggs flour milk butter salt|Batter Pudding|chewy",
-  "truffleoil mushroom potato cream parmesan|Truffle Gratin|rich",
-  "chicken lemon garlic potato oil|Roast Dinner|sour",
-  "prawn tomato garlic basil oil|Prawn Arrabbiata|briny",
-  "wagyu mushroom garlic butter pepper|Wagyu Skillet|rich",
-  "cheddar tomato basil oil garlic|Melt Plate|rich",
-  "bacon eggs cheddar butter tomato mushroom|The Full English Deluxe|smoky",
-  "chicken potato onion cream butter garlic|Sunday Roast|rich",
-  "parmesan eggs bacon cream pepper butter|The Carbonara|rich",
-  "tomato basil garlic oil parmesan cheddar|The Garden Bake|herbal",
-  "prawn garlic lemon butter oil parmesan|The Seafood Plate|briny",
-  "choc cream eggs honey butter milk|Chocolate Mousse Deluxe|sweet",
-  "wagyu truffleoil parmesan mushroom butter salt|The Chef's Kiss|rich",
-  "potato cheddar cream milk butter onion|The Dauphinoise|creamy",
-  "chicken bacon mushroom cream onion potato|The Pie|rich",
-  "lemon honey cream butter eggs milk|Lemon Posset|sour"
+  "wagyu truffleoil parmesan mushroom butter salt|The Chef's Kiss|rich"
 ];
 const W5_FORMS = [
   {tag:"cold",words:["Ice","Sorbet","Chilled Plate"]},
@@ -1371,7 +808,7 @@ const ascendCost = () => (WORLD && WORLD.ascendCost) || Infinity;
 
 const S = {
   level:1, shells:150, day:1, served:0, dayServed:0, streak:0,
-  stock:{}, prices:{}, prevPrices:{}, phase:"morning",
+  stock:{}, prices:{}, prevPrices:{}, sale:{}, phase:"morning",
   pendingStock:{}, pendingUp:{}, arrived:[], bowl:[], plate:null, customer:null, onDeck:null,
   found:new Set(), made:new Map(), timerOn:true, completed:false, history:[],
   up:{}, lastT:0
@@ -1460,14 +897,21 @@ const levelMult  = () => (WORLD && WORLD.mult) || 1;
 const avoidFactor = () => Math.min(0.85, 0.35 + (S.up.cool || 0) * 0.10);
 const pool     = () => INGREDIENTS.filter(i => i.tier <= maxTier());
 const perDay   = () => 5 + Math.floor((S.day - 1) / 3);
-const price    = ing => Math.max(2, Math.round((S.prices[ing.id] || 12) * (1 - S.up.bulk*0.08)));
+const price     = ing => Math.max(2, Math.round((S.prices[ing.id] || 12) * (1 - S.up.bulk*0.08)));
+const salePrice = ing => Math.max(1, S.sale[ing.id] || 1);
 const priceLow  = () => (WORLD && WORLD.priceLow)  || 5;
 const priceHigh = () => (WORLD && WORLD.priceHigh) || 30;
 
 function rollPrices(){
   S.prevPrices = Object.assign({}, S.prices);
   const lo = priceLow(), span = priceHigh() - lo + 1;
-  INGREDIENTS.forEach(i => { S.prices[i.id] = lo + Math.floor(Math.random()*span); });
+  S.sale = {};
+  INGREDIENTS.forEach(i => {
+    const buy = lo + Math.floor(Math.random()*span);
+    S.prices[i.id] = buy;
+    // what it's worth on a plate today — its own roll, 1.3x to 2.6x what you paid
+    S.sale[i.id] = Math.max(buy + 1, Math.round(buy * (1.3 + Math.random()*1.3)));
+  });
 }
 const totalStock = () => Object.values(S.stock).reduce((a,b)=>a+b,0);
 
@@ -1510,13 +954,14 @@ function drawPantry(){
       '<span class="pE" aria-hidden="true">' + ing.e + '</span>' +
       '<span class="pN">' + ing.n + '</span>' +
       '<span class="pT">' + ing.tags.map(t=>TAG_WORDS[t]).join(" · ") + '</span>' +
+      '<span class="pV">' + salePrice(ing) + ' on the plate</span>' +
       '<span class="pC">' + have + '</span>';
     b.setAttribute("aria-label", ing.n + ", " + have + " in stock");
     b.addEventListener("click", () => takeFromPantry(ing));
     grid.appendChild(b);
   });
   el("pantrySub").textContent = list.length + " ingredients stocked · " + totalStock() +
-    " units on the shelf";
+    " units on the shelf · the amber figure is what each adds to the bill today";
   const emp = el("pantryEmpty");
   if(totalStock() === 0){
     emp.hidden = false;
@@ -1570,7 +1015,8 @@ function combine(){
     note("Careful hands — the " + back.n.toLowerCase() + " went back on the shelf.");
   }
 
-  S.plate = {name, key, tags:[...tags], known:!!known, isNew, parts:S.bowl.length};
+  const value = S.bowl.reduce((a,i) => a + salePrice(i), 0);
+  S.plate = {name, key, tags:[...tags], known:!!known, isNew, parts:S.bowl.length, value};
   S.bowl = [];
   if(isNew) note("New recipe found: " + name + ". The book pays " + bounty + " " + CUR() + ".", "good");
   drawPantry(); drawBowl(); drawPlate(); paint();
@@ -1582,7 +1028,7 @@ function scorePlate(){
     const have = p.key.split("|");
     const got = c.needs.filter(id => have.includes(id));
     const all = got.length === c.needs.length;
-    let pay = got.length ? 25 + 28 * got.length : 5;
+    let pay = (got.length ? 25 + 28 * got.length : 5) + p.value;
     if(all){
       pay += 15;
       if(p.known) pay += 20;
@@ -1596,7 +1042,7 @@ function scorePlate(){
   }
   if(c.dish){
     const ok = p.key === c.dish;
-    let pay = ok ? 45 + 30 * RECIPES[c.dish].ids.length + (S.up.surge || 0) * 10 : 5;
+    let pay = (ok ? 45 + 30 * RECIPES[c.dish].ids.length + (S.up.surge || 0) * 10 : 5) + p.value;
     if(ok && S.timerOn) pay += Math.round(Math.max(0, c.left / c.total) * 20);
     if(c.vip) pay *= 2;
     pay = Math.max(1, Math.round(pay * dayMult() * tipMult() * levelMult() *
@@ -1607,7 +1053,7 @@ function scorePlate(){
   const bads = c.avoid.filter(t => p.tags.includes(t));
   const full = hits.length === c.wants.length;
 
-  let pay = hits.length * 18;
+  let pay = hits.length * 18 + p.value;
   if(full) pay += 24;
   if(p.known) pay += 18;
   if(S.timerOn) pay += Math.round(Math.max(0, c.left / c.total) * 16);
@@ -1871,8 +1317,9 @@ function drawPlate(){
   }).join("");
   const k = el("dishKnown");
   k.className = "known" + (S.plate.isNew ? " fresh" : "");
-  k.textContent = S.plate.isNew ? "New to the book."
-                : S.plate.known ? "A recipe the regulars know." : "Improvised.";
+  k.textContent = (S.plate.isNew ? "New to the book. "
+                : S.plate.known ? "A menu item. " : "Improvised. ") +
+                "Ingredients on the bill: " + S.plate.value + " " + CUR() + ".";
   drawBowl();
 }
 
@@ -1943,8 +1390,9 @@ function moveTag(ing){
 function drawMarket(){
   el("stockNote").textContent =
     "You order today, the truck delivers tomorrow morning — so buy for the day after this one. " +
-    "Prices are reset every morning, anywhere from " + priceLow() + " to " + priceHigh() +
-    " a unit — and the swings get wider the further up you go." +
+    "Each card shows what a unit costs you today and, after the arrow, what it's worth on a " +
+    "plate — every ingredient you cook with adds its sale price to the bill. Both re-roll " +
+    "every morning. Buying today ranges " + priceLow() + " to " + priceHigh() + "; stock arrives tomorrow." +
     (S.up.bulk ? " Bulk buying is saving you a further " + (S.up.bulk*8) + "%." : "");
 
   const bar = el("bulkBar");
@@ -1978,7 +1426,8 @@ function drawMarket(){
       '<div class="mE" aria-hidden="true">' + ing.e + '</div>' +
       '<div class="mN">' + ing.n + '</div>' +
       '<div class="mT">' + ing.tags.map(x=>TAG_WORDS[x]).join(" · ") + '</div>' +
-      '<div class="mP">' + p + moveTag(ing) + '</div>' +
+      '<div class="mP">' + p + moveTag(ing) +
+        '<span class="mSell"> → ' + salePrice(ing) + '</span></div>' +
       '<div class="mS">have ' + S.stock[ing.id] +
         (onOrder(ing.id) ? ' · <span class="onOrder">' + onOrder(ing.id) + ' coming</span>' : '') + '</div>';
     const btns = document.createElement("div");
@@ -1986,6 +1435,7 @@ function drawMarket(){
     [1,10].forEach(q => {
       const b = document.createElement("button");
       b.textContent = "+" + q;
+      b.title = "Buy " + q + " at " + p + " each — arrives tomorrow";
       b.disabled = S.shells < p*q;
       b.addEventListener("click", () => { buy(ing, q); drawMarket(); });
       btns.appendChild(b);
